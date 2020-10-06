@@ -1,0 +1,242 @@
+---
+layout: post
+title:  "如何透過 X-Road 串起網路的一帶一路"
+date:   2020-03-06 06:57:00
+categories: DevOps
+tags: 技術
+excerpt: 如何透過 X-Road 串起網路的一帶一路
+mathjax: true
+---
+
+## 簡介
+X-Road 是一套由愛沙尼亞信息系統管理局研發，可以集中管理的分佈式數據資料交換層，用來串起政府各部門、與企業甚至是跨國的加密訊息通道
+
+X-Road 最少需要搭配以下組件
+1. Central Server，簡稱CS，用來管理Member與Client
+2. Security Server，簡稱SS，用來接收Client端Post的資料，打給另一台SS or API，支援SOAP與Rest API
+3. CA Server，簡稱CA，除了管理信用憑証之外，還要負責處理Timestamp Server與OCSP Server
+4. PostgreSQL，由X-Road預設採用的資料庫
+
+相關運作可以參考以下圖示
+![](/blog/images/202010061901.png)
+
+![](/blog/images/202010061902.png)
+
+## 環境配置
+在架設之前，我們環境配置如下
+
+OS: Ubuntu 18.04.3
+User: petercheng
+
+| 主機名             | IP           |
+| ----------------- | ------------ |
+| Central Server    | 192.168.2.32 |
+| Security Server 1 | 192.168.2.33 |
+| Security Server 2 | 192.168.2.34 |
+| CA Server         | 192.168.2.35 |
+| Configure Proxy   | 192.168.2.36 |
+| PostgreSQL        | 192.168.2.37 |
+
+然後，我們透過以下指令，打出一個金鑰到各Server去，這樣可以讓我們Login時不用輸入密碼，方便接下來使用Ansible架設
+
+1. 新增金鑰(裡面無論出現什麼選項，預設一路Enter下去就好)
+```
+ssh-keygen
+```
+2. 將金鑰傳到各Server去
+```
+ssh-copy-id 192.168.2.32
+ssh-copy-id 192.168.2.33
+ssh-copy-id 192.168.2.34
+ssh-copy-id 192.168.2.35
+ssh-copy-id 192.168.2.36
+ssh-copy-id 192.168.2.37
+```
+3. 安裝PostgreSQL
+```
+# 先Login到PostgreSQL
+ssh 192.168.2.37
+# 透過APT安裝PostgreSQL
+sudo apt install postgresql postgresql-contrib
+# 修改postgresql.conf，讓server可以允許所有地方來的連入
+sudo vim /etc/postgresql/10/main/postgresql.conf
+# 將設定檔裡面的listen_address改成以下
+listen_addresses = '*'
+# 修改pg_hba.conf，讓server可以允許任何使用者從所有地方連入
+sudo vim /etc/postgresql/10/main/pg_hba.conf
+# 將以下Script加入最後一行
+host    all    all    all    md5
+# 重新啟動PostgreSQL
+sudo systemctl restart postgresql
+# 切換使用者成為postgres後，進入psql介面
+sudo -u postgres psql
+# 設定預設PostgreSQL密碼，需輸入二次新密碼
+\password
+# 離開psql
+\q
+```
+
+## 安裝X-Road
+
+1. 抓取X-Road原始碼
+```
+git clone https://github.com/nordic-institute/X-Road.git
+```
+
+2. 修改X-Road Ansible主機設定
+```
+vim ansible/hosts/example_xroad_hosts.txt
+# 將主機設定修改如下
+#central servers (ubuntu)
+[cs_servers]
+192.168.2.32 ansible_ssh_user=petercheng
+#security servers (ubuntu or rhel)
+[ss_servers]
+192.168.2.33 ansible_ssh_user=petercheng
+192.168.2.34 ansible_ssh_user=petercheng
+#configuration proxies (ubuntu)
+[cp_servers]
+192.168.2.36 ansible_ssh_user=petercheng
+#certification authority, time stamping authority and ocsp service server (ubuntu)
+[ca_servers]
+192.168.2.35 ansible_ssh_user=petercheng
+```
+
+3. 修改Central Server連入資料庫設定
+```
+vim ansible/vars_files/cs_database.yml
+# 連入資料庫設定如下
+database_host: "192.168.2.37:5432"
+database_admin_password: "[你的postgres密碼]"
+mask_local_postgresql: false
+```
+
+4. 修改Security Server連入資料庫設定
+```
+vim ansible/vars_files/ss_database.yml
+# 連入資料庫設定如下
+database_host: "192.168.2.37:5432"
+database_admin_password: "[你的postgres密碼]"
+opmonitor_admin_password: ""
+serverconf_username: "serverconf"
+serverconf_password: ""
+opmonitor_username: "opmonitor"
+opmonitor_password: ""
+messagelog_username: "messagelog"
+messagelog_password: ""
+mask_local_postgresql: false
+```
+
+5. 運行Ansible，安裝時間大約2小時左右
+
+註：建議每一台機器先跑過apt dist-upgrade，因為官方ansible有運行到這條，但是如果是有畫面要選擇的，透過ansible容易卡住無法運行
+
+```
+#進入ansible資料夾
+cd ansible
+#開始跑ansible，追加--ask-become-pass等一下會要求你輸入密碼，供sudo用
+ansible-playbook -i hosts/example_xroad_hosts.txt xroad_init.yml --ask-become-pass
+```
+
+## 設定 X-Road
+關於設定的部份，官方這邊有圖文教學手把手教學可以看
+
+[How to Configure Central Server](https://confluence.niis.org/pages/viewpage.action?pageId=6783483)
+
+預設使用者帳密
+
+帳號：xrd
+
+密碼：secret
+
+CA、OSCP、TSA所需的Key檔，可以在CA Server裡面的/home/ca/CA/certs中找到
+
+## Restful API
+
+依照官方手把手圖文教學，我們預設在Central Server中，會有一個Member，細項如下
+
+![](/blog/images/202010061903.jpg)
+
+
+而在Security Server中，我們會有三個Client，分別是管理Security Server用、註冊Client用與測試用，細項如下
+
+![](/blog/images/202010061904.jpg)
+
+而我們將鼠標移到其中一個項目，它會顯示該項目的相關明細，分別是Instance、Class、Code、Subsystem，這些之後我們串API會用到
+
+![](/blog/images/202010061905.jpg)
+
+我們先進入ID是SUBSYSTEM : DEV : GOV : 1234 : Test的Client
+
+![](/blog/images/202010061906.jpg)
+
+點擊Services頁籤，並且輸入您的API所在的Domain Name or IP，輸入完畢按下OK按鈕
+
+![](/blog/images/202010061907.jpg)
+
+點擊你的新增的API，這時它會是紅字，我們可以按下ENABLE按鈕起動它
+
+![](/blog/images/202010061908.jpg)
+
+點擊REST底下的Test，然後按下ADD ENDPOINT，我們要追加API的路徑
+![](/blog/images/202010061909.jpg)
+
+按下OK回到Services頁籤之後，點擊ACCESS RIGHTS追加存取權
+![](/blog/images/202010061910.jpg)
+
+點擊ADD SUBJECTS
+![](/blog/images/202010061911.jpg)
+
+按下SEARCH，選擇允許存取的Client
+![](/blog/images/202010061912.jpg)
+
+回到Service頁籤，會發現POST /user/login從(0)變成了(1)
+![](/blog/images/202010061913.jpg)
+
+接下來我們要進行API試打，在試打之前，我先提供一段用Golang寫的API
+```
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	port := fmt.Sprintf(":%s", "80")
+	http.HandleFunc("/user/login", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Hello World")
+	})
+	http.ListenAndServe(port, nil)
+}
+```
+
+上方的程式碼會監聽機器的80 Port，當你進入/user/login之後，他會回傳一個Hello World的訊息給你
+
+API Server IP: 192.168.56.119
+
+這是原本打API的路徑
+
+http://192.168.56.119/user/login
+
+這是經過Security Server之後，打API的路徑
+
+http://[你的Security Server IP or Domain Name]/r1/[Instance]/[Class]/[Code]/[Subsystem]/[Service Code]/user/login
+
+Example
+
+http://192.168.2.33/r1/DEV/GOV/1234/Test/Test/user/login
+
+這是你HTTP Header需要傳的東西
+
+Accept: application/json
+
+X-Road-Client: [Instance]/[Class]/[Code]/[Subsystem]
+
+Example
+
+X-Road-Client: DEV/GOV/1234/Test
+
+![](/blog/images/202010061914.jpg)
+
+以上，只是關於透過Security Server打Restful API的小教學，X-Road還支持SOAP，你將WSDL的路徑給他就可以抓到全部的呼叫路徑，相較於Restful要自已設定路徑簡便許多，如果日後有用到串流、RPC、SOAP等，我會再追加上範例教學
