@@ -40,20 +40,24 @@ User: petercheng
 然後，我們透過以下指令，打出一個金鑰到各Server去，這樣可以讓我們Login時不用輸入密碼，方便接下來使用Ansible架設
 
 1. 新增金鑰(裡面無論出現什麼選項，預設一路Enter下去就好)
-```
+{% highlight console %}
 ssh-keygen
-```
+{% endhighlight %}
+
+{:start="2"}
 2. 將金鑰傳到各Server去
-```
+{% highlight console %}
 ssh-copy-id 192.168.2.32
 ssh-copy-id 192.168.2.33
 ssh-copy-id 192.168.2.34
 ssh-copy-id 192.168.2.35
 ssh-copy-id 192.168.2.36
 ssh-copy-id 192.168.2.37
-```
+{% endhighlight %}
+
+{:start="3"}
 3. 安裝PostgreSQL
-```
+{% highlight console %}
 # 先Login到PostgreSQL
 ssh 192.168.2.37
 # 透過APT安裝PostgreSQL
@@ -74,46 +78,56 @@ sudo -u postgres psql
 \password
 # 離開psql
 \q
-```
+{% endhighlight %}
 
 ## 安裝X-Road
 
 1. 抓取X-Road原始碼
-```
+{% highlight console %}
 git clone https://github.com/nordic-institute/X-Road.git
-```
+{% endhighlight %}
 
+{:start="2"}
 2. 修改X-Road Ansible主機設定
-```
+{% highlight console %}
 vim ansible/hosts/example_xroad_hosts.txt
+
 # 將主機設定修改如下
 #central servers (ubuntu)
+
 [cs_servers]
 192.168.2.32 ansible_ssh_user=petercheng
 #security servers (ubuntu or rhel)
+
 [ss_servers]
 192.168.2.33 ansible_ssh_user=petercheng
 192.168.2.34 ansible_ssh_user=petercheng
 #configuration proxies (ubuntu)
+
 [cp_servers]
 192.168.2.36 ansible_ssh_user=petercheng
 #certification authority, time stamping authority and ocsp service server (ubuntu)
+
 [ca_servers]
 192.168.2.35 ansible_ssh_user=petercheng
-```
+{% endhighlight %}
 
+{:start="3"}
 3. 修改Central Server連入資料庫設定
-```
+{% highlight console %}
 vim ansible/vars_files/cs_database.yml
+
 # 連入資料庫設定如下
 database_host: "192.168.2.37:5432"
 database_admin_password: "[你的postgres密碼]"
 mask_local_postgresql: false
-```
+{% endhighlight %}
 
+{:start="4"}
 4. 修改Security Server連入資料庫設定
-```
+{% highlight console %}
 vim ansible/vars_files/ss_database.yml
+
 # 連入資料庫設定如下
 database_host: "192.168.2.37:5432"
 database_admin_password: "[你的postgres密碼]"
@@ -125,18 +139,20 @@ opmonitor_password: ""
 messagelog_username: "messagelog"
 messagelog_password: ""
 mask_local_postgresql: false
-```
+{% endhighlight %}
 
+{:start="5"}
 5. 運行Ansible，安裝時間大約2小時左右
 
 註：建議每一台機器先跑過apt dist-upgrade，因為官方ansible有運行到這條，但是如果是有畫面要選擇的，透過ansible容易卡住無法運行
 
-```
+{% highlight console %}
 #進入ansible資料夾
 cd ansible
+
 #開始跑ansible，追加--ask-become-pass等一下會要求你輸入密碼，供sudo用
 ansible-playbook -i hosts/example_xroad_hosts.txt xroad_init.yml --ask-become-pass
-```
+{% endhighlight %}
 
 ## 設定 X-Road
 關於設定的部份，官方這邊有圖文教學手把手教學可以看
@@ -194,7 +210,7 @@ CA、OSCP、TSA所需的Key檔，可以在CA Server裡面的/home/ca/CA/certs中
 ![](/blog/images/202010061913.jpg)
 
 接下來我們要進行API試打，在試打之前，我先提供一段用Golang寫的API
-```
+{% highlight go %}
 package main
 
 import (
@@ -209,7 +225,7 @@ func main() {
 	})
 	http.ListenAndServe(port, nil)
 }
-```
+{% endhighlight %}
 
 上方的程式碼會監聽機器的80 Port，當你進入/user/login之後，他會回傳一個Hello World的訊息給你
 

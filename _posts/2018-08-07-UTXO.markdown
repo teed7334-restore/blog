@@ -16,7 +16,7 @@ mathjax: true
 
 ## 現在的銀行都是怎麼記賬的？
 今天Alice與Bob都在瑞士銀行開了一個銀行帳號，且各自存了USD 1,000進去，這時資料庫應該是這樣記的
-```
+{% highlight javascript %}
 id = 000012345
 name = alice
 amount = 1000
@@ -24,7 +24,7 @@ amount = 1000
 id = 000012346
 name = bob
 amount = 1000
-```
+{% endhighlight %}
 
 今天當Alice轉賬USD 200給Bob時，進行資料庫Query時，我們需要同時完成以下二個步驟才算完成
 1. 將Alice的amount減去200
@@ -40,15 +40,15 @@ amount = 1000
 每一筆UTXO，都有一個txid
 
 今天Alice透過挖礦得到5BTC，Alice會得到以下UTXO
-```
+{% highlight javascript %}
 txid = #00021
 input = 
     txid = #00135 礦工打的，UTXO面額2 BTC
 address = 3FYxb7tnfv9sLSB9bFBnjunY3RDFChkBSW Alice的錢包位址
-```
+{% endhighlight %}
 
 而當Alice要轉2BTC給Bob時，會由Alice先將5BTC給Bob，Bob又打3BTC還給Alice
-```
+{% highlight javascript %}
 txid = #00032
 input = 
     txid = #00021 Alice的UTXO編號
@@ -59,7 +59,8 @@ output =
     txid = #00032
     amount = 300000000
 address = 3FYxb7tnfv9sLSB9bFBnjunY3RDFChkBSW Alice的錢包位址
-```
+{% endhighlight %}
+
 ## UTXO vs Acccount Model優劣
 UTXO：原理簡單、易於擴展、高度並行、隱匿性強
 

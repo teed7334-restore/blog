@@ -31,7 +31,7 @@ mathjax: true
 ![](/blog/images/202010061832.jpg)
 
 
-```
+{% highlight go %}
 {
 		{
 			name: "一般測試",
@@ -69,20 +69,20 @@ mathjax: true
 			},
 		},
 	}
-```
+{% endhighlight %}
 
 這時，你可以點Function上方的run test，就可以運行Unit test
 
 ![](/blog/images/202010061833.jpg)
 
 如果你要一次運行資料夾內包含子資料夾裡面的全部測試碼，可以在該資料夾下輸入以下指令
-```
+{% highlight console %}
 go test ./...
-```
+{% endhighlight %}
 
 ![](/blog/images/202010061834.jpg)
 
 如果你需要一次運行所有$GOPATH資料夾下包含子資料夾的全部則試碼，可以直接下以下指令
-```
+{% highlight console %}
 go test ...
-```
+{% endhighlight %}

@@ -42,137 +42,137 @@ Dokcer的所有Image通通都是唯讀的，你可以想像成你在VirtualBox/V
 在畫面的右上方，有一個docker pull redis，這就是透過指令行自動下載Image的方法，而我們再點入上方tags的頁籤，可以看見有許許多多不同版本的Redis可以安裝
 
 抓取Image命令
-```
+{% highlight console %}
 $ docker pull [image名稱]:[版本編號]
-```
+{% endhighlight %}
 
 以安裝最新版redis為例
-```
+{% highlight console %}
 $ docker pull redis:latest
-```
+{% endhighlight %}
 
 ## 如何運行Docker Container
 運行Docker Container命令如下
-```
+{% highlight console %}
 $ docker run --name [Container Name] -p [Host OS Port]:[Guest OS Port] -d [Image Name]
-```
+{% endhighlight %}
 
 好比我們現在要運行三個redis，容器名分別為redis1、redis2、redis3，容器內部的port與本地的port做mapping，分別對應到6379、6378、6377，那我們可以這樣下指令
-```
+{% highlight console %}
 $ docker run --name redis1 -p 6379:6379 -d redis;
 $ docker run --name redis2 -p 6378:6378 -d redis;
 $ docker run --name redis3 -p 6377:6378 -d redis;
-```
+{% endhighlight %}
 
 最後我們可以透過以下指令查看容器是否有被起動
-```
+{% highlight console %}
 docker ps -a | grep redis
-```
+{% endhighlight %}
 
 ## 如何重開機之後，可以自動運行背景執行服務
 自動運行Docker Container命令如下
-```
+{% highlight console %}
 $ docker run --name [Container Name] -p [Host OS Port]:[Guest OS Port] -d [Image Name] --restart=always
-```
+{% endhighlight %}
 
 以上面redis1為例，我們可以下以下指令達到自動運行
-```
+{% highlight console %}
 $ docker run --name redis1 -p 6379:6379 -d redis --restart=always
-```
+{% endhighlight %}
 
 ## 如何將外部的資料夾掛入Docker Container中
 運行Docker Container命令如下
-```
+{% highlight console %}
 $ docker run --name [Container Name] -v [Host OS Directory]:[Guest OS Directory]
-```
+{% endhighlight %}
 
 好比我們要透過Docker運行Python3，我們可以命令可以這麼下
-```
+{% highlight console %}
 $ docker run --name python -v /home/peter/WebSite:/app -p 8080:8080 -it python bash
-```
+{% endhighlight %}
+
 命令行中的-it，指的是互動模式，而之前使用的-d指的是背景執行
 
 接下來我們就可以進入到Docker Container中的Bash底下，進入/app資料夾之後，可以發現就是我們掛上的資料夾/home/peter/WebSite，然後你就可以透過IDE開始開發你的Python程式碼，於Docker Container中下指令運行
-```
+{% highlight console %}
 $ python xxxx.py
-```
+{% endhighlight %}
 
 ## 如何進入Docker Container
 進入Docker Container命令如下
-```
+{% highlight console %}
 $ docker exec -it [Container Name] bash
-```
+{% endhighlight %}
 
 ## 如何移除己運行的Container
 移除Docker Container命令如下
-```
+{% highlight console %}
 $ docker rm -f [Container Name]
-```
+{% endhighlight %}
 
 ## 如何讓Docker Container中的服務可以互通
 建立Docker Container連結的命令如下
-```
+{% highlight console %}
 $ docker run --name [Container Name] --link [Container Name]
-```
+{% endhighlight %}
 
 好比今天我們運行Python的容器要連到Redis1、Redis2、Redis3這三個容器
-```
+{% highlight console %}
 $ docker run --name python --link redis1 --link redis2 --link redis3 -it python bash
-```
+{% endhighlight %}
 
 當我們進入Container之後，我們可以透過ping [Container Name]來得知是否有連線上
 
 ## 如何將Docker Cotainer中的資料Copy到本機來
 當我們用Docker建置Nginx與MySQL這類的服務時，我們一開始是不會有nginx.conf與my.cnf檔案的，我們要從Docker Cotainer中，將nginx.conf與my.cnf複製出來修改之後，再用-v的方式將資料夾掛到Container裡面去，這時我們可以使用以下指令
-
-```
+{% highlight console %}
 $ docker cp [Container Name]:[Container Directory or File] [save as to local path]
-```
+{% endhighlight %}
 
 好比今天我要將python Container中的~/.profile複製到本機來，可以下以下指令
-```
+{% highlight console %}
 $ docker cp python:/root/.profile profile
-```
+{% endhighlight %}
 
 ## 我如何編譯屬於自己的Docker Image
 好比說我今天開發Python，預設的Python Image裡面是沒有VIM編輯器的，但我在Container底下有時會需要VIM編輯器，之前說過，Docker Image是唯讀的，那我可以如何自行編譯我需要的Docker Image
 
 
 首先，在你的資料夾中新增一個Dockerfile的檔案，記得大小寫要相符，而Dockerfile檔案內容如下
-```
+{% highlight yaml %}
 FROM python:latest
 
 RUN apt update -y; apt install vim;
 
 WORKDIR /app
-```
+{% endhighlight %}
 
 當中，FROM代表我要從那一個Image來做修改，RUN指的是要在Shell底下運行的命令，WORKDIR指的是當我進入Container之後的預設目錄
 
 接下來我們可以再撰寫一個compilerPython.sh的檔案，檔案內容如下
-```
+{% highlight console %}
 $ docker build -t python-dev .
-```
+{% endhighlight %}
 
 透過chmod +x compilerPython.sh把執行的權限給compilerPython.sh之後，就可以透過./compilerPython.sh運行Shell Script
 
 上面那一行的意思是，請透過我的Dockerfile，編譯出一個叫python-dev的Image檔
 
 最後我們可以透過以下指令來查看是否擁有這個Image檔
-```
+{% highlight console %}
 $ docker images | grep python-dev
-```
+{% endhighlight %}
 
 ## 我如何刪除不要的Docker Image檔案
 刪除Docker Image的命令如下
-```
+{% highlight console %}
 $ docker rmi -f [Image Name]
-```
+{% endhighlight %}
 
 好比我們要刪掉之前新增的python-dev的Image，可以下以下指令
-```
+{% highlight console %}
 $ docker rmi -f python-dev
-```
+{% endhighlight %}
 
 ## 後記
 1. Docker for Windows，必須要Windows有安裝Hyper-V才有辦法運行，而且Win10要Pro版才有辦法安裝Hyper-V, Home版是無法安裝Hyper-V的，安裝Hyper-V請參照以下網址

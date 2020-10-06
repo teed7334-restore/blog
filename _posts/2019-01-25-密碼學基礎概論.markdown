@@ -22,14 +22,14 @@ mathjax: true
     註︰加密金鑰與解密金鑰同一隻稱之為對稱式加密，若不同隻則為非對稱式加密
 
     以上可以透過在Google搜尋"線上加解密"來找到線上工具練習一下加解密的手感，或是以下網址
-    ```
+    {% highlight javascript %}
     明文︰I Love Taipay
     密文︰U2FsdGVkX190PPDo0v+93z2DhjfQnOuWbs66QRIIoH8=
     加解密金鑰︰12345678
     演算法︰AES
-    ```
+    {% endhighlight %}
 
-    [http://www.taiwanad.com/tool_textencrypt.php](http://www.taiwanad.com/tool_textencrypt.php)
+[http://www.taiwanad.com/tool_textencrypt.php](http://www.taiwanad.com/tool_textencrypt.php)
 
 ## 2. 常用的加密種類
 
@@ -59,14 +59,15 @@ mathjax: true
 鹽是一般用來混淆密碼產生之結果，讓密碼變得更難破解的一種做法，一般比較常用來和單向加密做搭配，因為我們懶得在解開密碼之後，還要將鹽去掉
 
 好比我們試著透過線上Hash工具，透過md5，將I Love Taipay單向加密成一串沒意義的編碼
-```
+{% highlight javascript %}
 明文︰I Love Taipay
 密文︰d367bf411da335d23b76efaaa9ea3d32
-```
+{% endhighlight %}
+
 因為Hash是單向加密的，所以是無法再解密解回去的，但明文對應的密文卻是固定的，而當我在明文任何地方加上鹽之後，密文也會跟著隨之改變
 
 好比x = hahahahaha
-```
+{% highlight javascript %}
 表達式︰I Love (x) Taipay
 明文︰I Love hahahahaha Taipay
 密文︰6cc2a59a4dfdebff7471ceb6ead3636f
@@ -78,7 +79,8 @@ mathjax: true
 表達式︰I Love Taipay (x)
 明文︰I Love Taipay hahahahaha
 密文︰ac64a14f5fa3e5b2c125ae2246712e02
-```
+{% endhighlight %}
+
 ## 4. 碰撞
 因為Hash是將一串文字加密成一段固定長度的字串，因為長度是固定的，所以當不同字元被轉成相同加密後的密文是可能的，這稱之為碰撞，如果以二個隨機的明文來分析，md5碰撞的機率約為2的-128次方，sha-256目前還沒碰到碰撞
 
@@ -90,20 +92,23 @@ mathjax: true
 我們有一個memberGo的網站，使用者註冊的帳號我們管理員在後台可以看見明文是OK的，但密碼不能夠讓管理員看見，密碼讓管理員看見的情況下，除了可能堅守自盜、網站被攻破全會員密碼都被黑客竊取之外，厲害的黑客還可以透過密碼編碼的方式來破解會員在其他網站用到的密碼
 
     一般來說，我們可以用以下方式來儲存密碼
-    ```
+    {% highlight javascript %}
     x = Taipay
     表達式︰Password = SHA-256(明文 + (x))
-    ```
+    {% endhighlight %}
+
+{:start="2"}
 2. 網頁表單與APP表單
 我們網站與手機APP上面，常常都會有一些表單可以讓使用者做填寫，當使用者填寫完表單資料之後，表單會回拋給伺服器做資料儲存與修改之用，但我們要怎麼確認，使用者拋回來的表單，是使用者和伺服器請求後，伺服器發給使用者，而不是使用者自己做的偽表單呢？
 
     一般來說，我們可以這麼做
-    ```
+    {% highlight javascript %}
     x = Taipay
     y = 使用者的IP
     z = 目前時間好比2019-01-22 08:30，我抓出20190122083，去掉0，代表這組Token只能用10分鐘
     表達式︰Token = SHA-256(使用者帳號 + (x) + (y) + (z))
-    ```
+    {% endhighlight %}
+
 ## 6. 進階運用
 
 1. 快速資料比對
@@ -115,6 +120,7 @@ mathjax: true
     | -------- | -------- | -------- | -------- | ----------------- |
     | File 1   | File 2   | File 3   | File 4   | Files             | 
 
+    {:start="2"}
     2. 將子資料夾中的檔案先排序之後，每個資料夾二個檔案各做一次Hash
 
         註︰排序這個流程相當重要，SHA-256(File 1 + File 2)不等於SHA-256(File 2 + File 3)
@@ -123,15 +129,17 @@ mathjax: true
     | -------- | -------- | ----------------- |
     | Dir 1    | Dir 2    | Sub Directory     |
 
+    {:start="3"}
     3. 將DIR1與DIR2做Hash
 
     | 697627...| SHA-256       |
     | -------- | ------------- |
     | DIR 1    | Top Directory |
     
+    {:start="4"}
     4. 當我今天拿到一組資料夾，裡面的值全部Hash出來是697627...時，我們可以知道，這二份資料夾裡面的資料是完全一樣的
 
-    ```
+    {% highlight javascript %}
     File 1 = 109997...
     File 2 = B30300...
     File 3 = BEB531...
@@ -141,284 +149,289 @@ mathjax: true
     Sub Dir 2 = SHA-256(File 3 + File 4)
 
     Top Dir 1 = SHA-256(Sub Dir 1 + Sub Dir 2)
-    ```
+    {% endhighlight %}
     
+{:start="2"}
 2. 比較複雜的加解密運算，好比今天我們有以下公私鑰
 
-    ```
-    Private Key = SHA-256(I Love Taipay) 
-    Private Key = 2DD0C78AAFDF19790CAEE11657111F7E6E581A5F1140949C5261ADBCC41C75D9
+{% highlight javascript %}
+Private Key = SHA-256(I Love Taipay) 
+Private Key = 2DD0C78AAFDF19790CAEE11657111F7E6E581A5F1140949C5261ADBCC41C75D9
+
+Public Key 1 = SHA-256(前半段Private Key)
+public Key 1 = 0812CB3AF01846423EC04249809515A101FA204BE6060772591259AE953E9E22
+
+Public Key 2 = SHA-256(後半段Private Key)
+public Key 2 = 80028C414FE83BFE08600A7A6C0A34B03F1682E7F4393E54E9025FF39552286A
+{% endhighlight %}
+
+伺服器將Private Key自己做保存，將Public Key 1發給Alice，Public Key 2發給Bob
+
+Alice與Bob各自將伺服器給的Public Key當成是自己的Private Key，又做了一次SHA-256產生Public Key來使用
+
+{% highlight javascript %}
+Alice Private Key = Public Key 1
+Alice Public Key = SHA-256(Public Key 1)
+
+Bob Private Key = Public Key 2
+Bob Public Key = SHA-256(Public Key 2)
+{% endhighlight %}
     
-    Public Key 1 = SHA-256(前半段Private Key)
-    public Key 1 = 0812CB3AF01846423EC04249809515A101FA204BE6060772591259AE953E9E22
-    
-    Public Key 2 = SHA-256(後半段Private Key)
-    public Key 2 = 80028C414FE83BFE08600A7A6C0A34B03F1682E7F4393E54E9025FF39552286A
-    ```
-    
-    伺服器將Private Key自己做保存，將Public Key 1發給Alice，Public Key 2發給Bob
-    
-    Alice與Bob各自將伺服器給的Public Key當成是自己的Private Key，又做了一次SHA-256產生Public Key來使用
-    
-    ```
-    Alice Private Key = Public Key 1
-    Alice Public Key = SHA-256(Public Key 1)
-    
-    Bob Private Key = Public Key 2
-    Bob Public Key = SHA-256(Public Key 2)
-    ```
-    
-    這時，Alice用Private Key加密了一則密文，並且附上了自己的Public Key發給Server，Server只需先將屬於Alice的Public Key 1拿來做一次SHA-256，就可以比對產生的二隻金鑰是不是一樣的，如果是一樣的，就對密文進行解密
-    
-    如果說Alice要對Bob發送密文，那麼Alice可以像伺服器一樣，將自己的Private Key切成一半，拿去做出Public Key之後，將Public Key交給Bob當作Private Key，Bob則將密文透過Private Key加密過後，發送密文與Public Key給Alice
-    
-    但是以上方式，如果要加鹽的話，則必需雙方都是用同一罐鹽，不然就無法反解了
-    
-    我們也可以透過2.2的線上工具，透過線上產生公私鑰，對密文進行加解密的動作
-    
+這時，Alice用Private Key加密了一則密文，並且附上了自己的Public Key發給Server，Server只需先將屬於Alice的Public Key 1拿來做一次SHA-256，就可以比對產生的二隻金鑰是不是一樣的，如果是一樣的，就對密文進行解密
+
+如果說Alice要對Bob發送密文，那麼Alice可以像伺服器一樣，將自己的Private Key切成一半，拿去做出Public Key之後，將Public Key交給Bob當作Private Key，Bob則將密文透過Private Key加密過後，發送密文與Public Key給Alice
+
+但是以上方式，如果要加鹽的話，則必需雙方都是用同一罐鹽，不然就無法反解了
+
+我們也可以透過2.2的線上工具，透過線上產生公私鑰，對密文進行加解密的動作
+
+{:start="3"}    
 3. 簡單非對稱加解密
 
-    今天有一段通關密語-「I Love Taipay」
-    
-    我們可以透過以下網址查詢英文、數字的ASCII碼表
-    [http://www.asciitable.com/](http://www.asciitable.com/)
-    
-    我們將通關密語的空白變成0
-    ```
-    I0Love0Taipay
-    ```
-    
-    對應ASCII碼表，將0以外的英文變成ASCII的數字，有區分大小寫，分別為
-    ```
-    I = 73
-    L = 76
-    o = 111
-    v = 118
-    e = 101
-    T = 84
-    a = 97
-    i = 105
-    p = 112
-    a = 97
-    y = 121
-    ```
-    
-    接下來我們將所有數字都按順序橫放，可以得到以下的值
-    ```
-    73 0 76 111 118 101 0 84 97 105 112 97 121
-    ```
-    
-    接下來我們將讓眼睛容易分辨的空白去掉
-    ```
-    730761111181010849710511297121
-    ```
-    
-    然後，我們一個數字一個數字去看，看該數字要變成10還缺多少，如果數字本來就是0則補上A
-    ```
-    Key 1 = 730761111181010849710511297121
-    Key 2 = 37A349999929A9A26139A599813989
-    
-    Private Key = SHA-256 (Key 2)
-    Private Key = 5B4B78B8F15ADC5A2CF12B8F9DE2B1CD16325B65BC8BB49A0E81B60D2A299C80
-    
-    Public Key = SHA-256 (Key 1)
-    Public Key = 3630B00CF40D2E8B1D90D6AE4016BF39D7F7B2FB56D3C4F329C8221745AF1A9D
-    ```
-    
-    這時，我們將Public Key切成一半，前一半尾巴的15碼砍掉，後一半開頭的15碼砍掉
-    ```
-    Public Key = 3630B00CF40D2E8B1D90D6AE4016BF39 D7F7B2FB56D3C4F329C8221745AF1A9D
-    Public Key = 3630B00CF40D2E8B1 D90D6AE4016BF39 D7F7B2FB56D3C4F 329C8221745AF1A9D
-    Public Key = 3630B00CF40D2E8B1 329C8221745AF1A9D
-    Public Key = 3630B00CF40D2E8B1(Key 1)329C8221745AF1A9D
-    Public Key = 3630B00CF40D2E8B1730761111181010849710511297121329C8221745AF1A9D
-    ```
-    
-    這時，Bob透過Private Key將訊息加密扔並附上Public Key扔給Alice
-    
-    Alice取出Public Key中的Key 1，反推回Key 2，進行SHA-256之後，就可以進行解密
-    ```
-    Public Key = 3630B00CF40D2E8B1730761111181010849710511297121329C8221745AF1A9D
-    Public Key = 3630B00CF40D2E8B1 730761111181010849710511297121 329C8221745AF1A9D
-    
-    Key 1 = 730761111181010849710511297121
-    Key 2 = 37A349999929A9A26139A599813989
-    
-    Private Key = SHA-256 (Key 2)
-    Private Key = 5B4B78B8F15ADC5A2CF12B8F9DE2B1CD16325B65BC8BB49A0E81B60D2A299C80
-    ```
+今天有一段通關密語-「I Love Taipay」
+
+我們可以透過以下網址查詢英文、數字的ASCII碼表
+[http://www.asciitable.com/](http://www.asciitable.com/)
+
+我們將通關密語的空白變成0
+{% highlight javascript %}
+I0Love0Taipay
+{% endhighlight %}
+
+對應ASCII碼表，將0以外的英文變成ASCII的數字，有區分大小寫，分別為
+{% highlight javascript%}
+I = 73
+L = 76
+o = 111
+v = 118
+e = 101
+T = 84
+a = 97
+i = 105
+p = 112
+a = 97
+y = 121
+{% endhighlight %}
+
+接下來我們將所有數字都按順序橫放，可以得到以下的值
+{% highlight javascript %}
+73 0 76 111 118 101 0 84 97 105 112 97 121
+{% endhighlight %}
+
+接下來我們將讓眼睛容易分辨的空白去掉
+{% highlight javascript %}
+730761111181010849710511297121
+{% endhighlight %}
+
+然後，我們一個數字一個數字去看，看該數字要變成10還缺多少，如果數字本來就是0則補上A
+{% highlight javascript %}
+Key 1 = 730761111181010849710511297121
+Key 2 = 37A349999929A9A26139A599813989
+
+Private Key = SHA-256 (Key 2)
+Private Key = 5B4B78B8F15ADC5A2CF12B8F9DE2B1CD16325B65BC8BB49A0E81B60D2A299C80
+
+Public Key = SHA-256 (Key 1)
+Public Key = 3630B00CF40D2E8B1D90D6AE4016BF39D7F7B2FB56D3C4F329C8221745AF1A9D
+{% endhighlight %}
+
+這時，我們將Public Key切成一半，前一半尾巴的15碼砍掉，後一半開頭的15碼砍掉
+{% highlight javascript %}
+Public Key = 3630B00CF40D2E8B1D90D6AE4016BF39 D7F7B2FB56D3C4F329C8221745AF1A9D
+Public Key = 3630B00CF40D2E8B1 D90D6AE4016BF39 D7F7B2FB56D3C4F 329C8221745AF1A9D
+Public Key = 3630B00CF40D2E8B1 329C8221745AF1A9D
+Public Key = 3630B00CF40D2E8B1(Key 1)329C8221745AF1A9D
+Public Key = 3630B00CF40D2E8B1730761111181010849710511297121329C8221745AF1A9D
+{% endhighlight %}
+
+這時，Bob透過Private Key將訊息加密扔並附上Public Key扔給Alice
+
+Alice取出Public Key中的Key 1，反推回Key 2，進行SHA-256之後，就可以進行解密
+{% highlight javascript %}
+Public Key = 3630B00CF40D2E8B1730761111181010849710511297121329C8221745AF1A9D
+Public Key = 3630B00CF40D2E8B1 730761111181010849710511297121 329C8221745AF1A9D
+
+Key 1 = 730761111181010849710511297121
+Key 2 = 37A349999929A9A26139A599813989
+
+Private Key = SHA-256 (Key 2)
+Private Key = 5B4B78B8F15ADC5A2CF12B8F9DE2B1CD16325B65BC8BB49A0E81B60D2A299C80
+{% endhighlight %}
     
 4. 多重簽核
 
-    今天有一段通關密語-「I Love Taipay」
-    
-    Alice是公司董事長
+今天有一段通關密語-「I Love Taipay」
 
-    Bob是公司執行長
+Alice是公司董事長
 
-    Cicely是公司財務長
-    
-    公司的金庫有全部公司的現金，但需要Alice、Bob、Cicely三位當中任二位的金鑰才能開啟
-    ```
-    main key = SHA-256(I Love Taipay)
-    main key = 2DD0C78AAFDF19790CAEE11657111F7E6E581A5F1140949C5261ADBCC41C75D9
-    ```
-    
-    main key一共有64位，我們將最後一位當成檢查碼，將各21碼經過SHA-256編碼過後，分配給Alice、Bob、Cicely
-    ```
-    main key = 2DD0C78AAFDF19790CAEE 11657111F7E6E581A5F11 40949C5261ADBCC41C75D 9
-    
-    Alice = SHA-256(2DD0C78AAFDF19790CAEE)
-    Alice = 8F57A71A4D7B5AB0833C3F9AF3A83960AE6BC3D5550F444BF1BB0AA4FBC8405D
-    
-    Bob = SHA-256(11657111F7E6E581A5F11)
-    Bob = FCD94EB617BF55B6CB2A8088BC12C793799941AE5A5C98C0B3DD45FBC24A5378
-    
-    Cicely = SHA-256(40949C5261ADBCC41C75D)
-    Cicely = 6EE03E7FEB867C8AAF3C13EBD3C01339B7D6FC793F278973200C59C37A6829D5
-    ```
-    
-    當今天Bob與Cicely各自提供自己的金鑰給公司的金庫時，公司金庫可以透過通關密語一路推出main Key到各自對應的金鑰，進而開啟金庫
-    
-    那有沒有更簡單做到「包含某些」這件事呢？我們可以用到遮罩，好比
-    
-    1 = Alice
+Bob是公司執行長
 
-    2 = Bob
+Cicely是公司財務長
 
-    4 = Cicely
+公司的金庫有全部公司的現金，但需要Alice、Bob、Cicely三位當中任二位的金鑰才能開啟
+{% highlight javascript %}
+main key = SHA-256(I Love Taipay)
+main key = 2DD0C78AAFDF19790CAEE11657111F7E6E581A5F1140949C5261ADBCC41C75D9
+{% endhighlight %}
 
-    8 = David
+main key一共有64位，我們將最後一位當成檢查碼，將各21碼經過SHA-256編碼過後，分配給Alice、Bob、Cicely
+{% highlight javascript %}
+main key = 2DD0C78AAFDF19790CAEE 11657111F7E6E581A5F11 40949C5261ADBCC41C75D 9
 
-    16 = Emma
+Alice = SHA-256(2DD0C78AAFDF19790CAEE)
+Alice = 8F57A71A4D7B5AB0833C3F9AF3A83960AE6BC3D5550F444BF1BB0AA4FBC8405D
 
-    32 = Felicia
-    
-    其中，如果我要知道一組數裡面有沒有包含Alice、Emma、Emma，我們只需要將這三人各代表的號碼都加起來就可以知道了
-    
-    1 + 4 + 16 = 21
-    
-    如果要反解回去，可以採用以下方法
-    
-    21 - (最接近21的值，也就是16) = 5，16代表Emma
+Bob = SHA-256(11657111F7E6E581A5F11)
+Bob = FCD94EB617BF55B6CB2A8088BC12C793799941AE5A5C98C0B3DD45FBC24A5378
 
-    5 - (最接近5的值，也就是4) = 1，4代表Cicely
+Cicely = SHA-256(40949C5261ADBCC41C75D)
+Cicely = 6EE03E7FEB867C8AAF3C13EBD3C01339B7D6FC793F278973200C59C37A6829D5
+{% endhighlight %}
 
-    1代表Alice
-    
-    而我們將置換成該人持有的金鑰之後，可以透過更短的數字做到包含這件事
+當今天Bob與Cicely各自提供自己的金鑰給公司的金庫時，公司金庫可以透過通關密語一路推出main Key到各自對應的金鑰，進而開啟金庫
+
+那有沒有更簡單做到「包含某些」這件事呢？我們可以用到遮罩，好比
+
+1 = Alice
+
+2 = Bob
+
+4 = Cicely
+
+8 = David
+
+16 = Emma
+
+32 = Felicia
+
+其中，如果我要知道一組數裡面有沒有包含Alice、Emma、Emma，我們只需要將這三人各代表的號碼都加起來就可以知道了
+
+1 + 4 + 16 = 21
+
+如果要反解回去，可以採用以下方法
+
+21 - (最接近21的值，也就是16) = 5，16代表Emma
+
+5 - (最接近5的值，也就是4) = 1，4代表Cicely
+
+1代表Alice
+
+而我們將置換成該人持有的金鑰之後，可以透過更短的數字做到包含這件事
     
 ## 7. 密碼學在區塊鏈上的運用
 
 1. 區塊結構
 
-    我們可以先用區塊鏈瀏覽器抓一個區塊來做查看，好比Block 000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886
+我們可以先用區塊鏈瀏覽器抓一個區塊來做查看，好比Block 000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886
 
-    [https://btc.com/000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886](https://btc.com/000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886)
+[https://btc.com/000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886](https://btc.com/000000000000000000017d4f7f2561bbff551811233b8e4689a03de137457886)
 
-    我們將Summary當做是區塊標題，Transactions當做是交易明細
+我們將Summary當做是區塊標題，Transactions當做是交易明細
 
-    區塊標題資料格式-
-    ```
-    Version: 本區塊驗証的版本號
-    Bits: 困難值，每挖出2016個區塊會調整一次
-    Nonce: 隨機值，也就是鹽
-    Time: 區塊挖出的當下時間
-    Merkle Tree Root: 區塊明細的肉粽頭Hash，還記得我們在6.1說過的資料快速比對方式嗎？
-    Prev Block: 上一個區塊的Hash值
-    Block Hash: 將本區塊所有資訊通通Hash起來的檢核碼
-    ...(略，其他的欄位可以看網站)
-    ```
+區塊標題資料格式-
+{% highlight javascript %}
+Version: 本區塊驗証的版本號
+Bits: 困難值，每挖出2016個區塊會調整一次
+Nonce: 隨機值，也就是鹽
+Time: 區塊挖出的當下時間
+Merkle Tree Root: 區塊明細的肉粽頭Hash，還記得我們在6.1說過的資料快速比對方式嗎？
+Prev Block: 上一個區塊的Hash值
+Block Hash: 將本區塊所有資訊通通Hash起來的檢核碼
+...(略，其他的欄位可以看網站)
+{% endhighlight %}
 
-    交易明細可以參考網站上顯示的內容，好比Transaction 1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc
+交易明細可以參考網站上顯示的內容，好比Transaction 1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc
 
-    [https://btc.com/1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc](https://btc.com/1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc)
-    
-    交易明細格式-
-    ```
-    Tx Id: 交易序號
-    Tx Hash: 本交易細項全部Hash起來的值
-    From Address: 從那個位置發幣
-    To Addres: 發到那個位置
-    Fee: 手續費
-    Time: 交易當下的時間
-    ...(略，其他的欄位可以看網站)
-    ```
-    
-    另外，關於Scripts方面，這邊先用一個簡單的範例做說明
-    
-    Alice在Bob的咖啡廳買花了0.015 BTC，系統的Script會用OP Code記錄如下
-    ```
-    OP_DUP OP_HASH160 <Bob Public Key Hash Hex> OP_EQUAL OP_CHECKSIGVERIFY
-    ```
-    
-    上面這行Script運作的方式從左到右代表的意思如下
-    ```
-    x = Hash160(Public Key Hash Hex)
-    ```
-    
-    因為這時我們沒有附上Bob咖啡廳的公鑰加上簽章，所以後面的OP_EQUAL與OP_CHECKSIGVERIFY是無法計算的
-    
-    當Bob要取得這筆款項時，Bob要附上自己的公鑰與簽章証明自己是本人
-    ```
-    <Bob Signature> <Bob Public Key> OP_DUP OP_HASH160 <Bob Public Key Hash Hex> OP_EQUAL OP_CHECKSIG
-    ```
-    
-    當Bob附上自己的公鑰與簽章經過計算之後，可以和上面寫的x對到，就可以拿取這筆錢了
-    
-    因為OP_Code的交易模式較為複雜，故不在這次做演講，有興趣可以參考以下網址
-    
-    OP_Code文件
+[https://btc.com/1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc](https://btc.com/1f8036b1566a0e7eae33b4fbbe1eed664e018cd206ae866e2edfba25da26e0fc)
 
-    [https://en.bitcoin.it/wiki/Script](https://en.bitcoin.it/wiki/Script)
-    
-    比特幣的交易方式，單簽與多簽
+交易明細格式-
+{% highlight javascript %}
+Tx Id: 交易序號
+Tx Hash: 本交易細項全部Hash起來的值
+From Address: 從那個位置發幣
+To Addres: 發到那個位置
+Fee: 手續費
+Time: 交易當下的時間
+...(略，其他的欄位可以看網站)
+{% endhighlight %}
 
-    [https://medium.com/@wilsonhuang/mastering-bitcoin-%E7%AD%86%E8%A8%98-standard-transactions-undone-bfb9b4ed0ed8](https://medium.com/@wilsonhuang/mastering-bitcoin-%E7%AD%86%E8%A8%98-standard-transactions-undone-bfb9b4ed0ed8)
-    
-    簽章流程
+另外，關於Scripts方面，這邊先用一個簡單的範例做說明
 
-    [https://medium.com/@bun919tw/transaction-%E7%B0%BD%E7%AB%A0%E7%9A%84%E6%B5%81%E7%A8%8B-45b883e8082a](https://medium.com/@bun919tw/transaction-%E7%B0%BD%E7%AB%A0%E7%9A%84%E6%B5%81%E7%A8%8B-45b883e8082a)
-    
-    最後，交易的內容，會被打成一組Hash，一個區塊大約能容納得下大約1MB的交易記錄，交易記錄會二筆二筆打成一組Hash，直到最後所有交易記錄變成一組Hash為止，區塊標題所有的資料再和全部的交易記錄打成一組Hash，當二個節點要檢查二個區塊是不是一樣時，可以先檢查Block Hash，當Block Hash不符之時，再檢查總交易記錄Hash，一步一步下去，直到找到有問題的點為止
-    
-    當下一個Block被挖出來之後，下一個Block會在Prev Block記錄下上一個Block Hash
-    
-    比特幣的概念比較偏向現金，它是採用UTXO的方式來做計算，你可以將每筆UTXO想像成一張100元，我們用現金消費是認現金不認人，你的比特錢包裡面的UTXO的可用餘額全部加一加，就是你可以花的比特幣的數量
+Alice在Bob的咖啡廳買花了0.015 BTC，系統的Script會用OP Code記錄如下
+{% highlight javascript%}
+OP_DUP OP_HASH160 <Bob Public Key Hash Hex> OP_EQUAL OP_CHECKSIGVERIFY
+{% endhighlight %}
 
-    而像以太坊則是用帳戶的方式，好比我有一張信用卡，額度一百萬，銀行知道這張信用卡的用卡人是誰，也知道他戶頭有多少錢
+上面這行Script運作的方式從左到右代表的意思如下
+{% highlight javascript %}
+x = Hash160(Public Key Hash Hex)
+{% endhighlight %}
 
-    關於UTXO與Account的差異，之前我有寫過一篇文章做比較，故不在此多加敘述
+因為這時我們沒有附上Bob咖啡廳的公鑰加上簽章，所以後面的OP_EQUAL與OP_CHECKSIGVERIFY是無法計算的
 
-    [https://hackmd.io/CuWSLwS3QeCgg8HHNvOP4A](https://hackmd.io/CuWSLwS3QeCgg8HHNvOP4A)
+當Bob要取得這筆款項時，Bob要附上自己的公鑰與簽章証明自己是本人
+{% highlight javascript %}
+<Bob Signature> <Bob Public Key> OP_DUP OP_HASH160 <Bob Public Key Hash Hex> OP_EQUAL OP_CHECKSIG
+{% endhighlight %}
+
+當Bob附上自己的公鑰與簽章經過計算之後，可以和上面寫的x對到，就可以拿取這筆錢了
+
+因為OP_Code的交易模式較為複雜，故不在這次做演講，有興趣可以參考以下網址
+
+OP_Code文件
+
+[https://en.bitcoin.it/wiki/Script](https://en.bitcoin.it/wiki/Script)
+
+比特幣的交易方式，單簽與多簽
+
+[https://medium.com/@wilsonhuang/mastering-bitcoin-%E7%AD%86%E8%A8%98-standard-transactions-undone-bfb9b4ed0ed8](https://medium.com/@wilsonhuang/mastering-bitcoin-%E7%AD%86%E8%A8%98-standard-transactions-undone-bfb9b4ed0ed8)
+
+簽章流程
+
+[https://medium.com/@bun919tw/transaction-%E7%B0%BD%E7%AB%A0%E7%9A%84%E6%B5%81%E7%A8%8B-45b883e8082a](https://medium.com/@bun919tw/transaction-%E7%B0%BD%E7%AB%A0%E7%9A%84%E6%B5%81%E7%A8%8B-45b883e8082a)
+
+最後，交易的內容，會被打成一組Hash，一個區塊大約能容納得下大約1MB的交易記錄，交易記錄會二筆二筆打成一組Hash，直到最後所有交易記錄變成一組Hash為止，區塊標題所有的資料再和全部的交易記錄打成一組Hash，當二個節點要檢查二個區塊是不是一樣時，可以先檢查Block Hash，當Block Hash不符之時，再檢查總交易記錄Hash，一步一步下去，直到找到有問題的點為止
+
+當下一個Block被挖出來之後，下一個Block會在Prev Block記錄下上一個Block Hash
+
+比特幣的概念比較偏向現金，它是採用UTXO的方式來做計算，你可以將每筆UTXO想像成一張100元，我們用現金消費是認現金不認人，你的比特錢包裡面的UTXO的可用餘額全部加一加，就是你可以花的比特幣的數量
+
+而像以太坊則是用帳戶的方式，好比我有一張信用卡，額度一百萬，銀行知道這張信用卡的用卡人是誰，也知道他戶頭有多少錢
+
+關於UTXO與Account的差異，之前我有寫過一篇文章做比較，故不在此多加敘述
+
+[https://hackmd.io/CuWSLwS3QeCgg8HHNvOP4A](https://hackmd.io/CuWSLwS3QeCgg8HHNvOP4A)
 
 2. 錢包位址計算
-    1. 單簽錢包計算方式，版本號為1
-    ```
-        Private Key = SHA-256(隨機數)
-        Public Key = SECP256K1(Private Key)
-        Public Key Hash = SHA-256(SHA-256(Public Key)) or RIPEMD160(Public Key)
-        Address = Base58 Check Encode(版本號 + Public Key Hash + Public Key Hash前四個字元)
-    ```
-        
-    2. 多簽錢包計算方式，版本號為3
-    ```
-        mnemonic = Peter的錢包
-        Master Key = HMAC-SHA512(mnemonic + (選填)密碼)
-        Master Private Key = Master Key從左往右取256個字元
-        Master Chain Key = Master Key從右往左取256個字元
-        Master Public Key = SECP256K1(Master Private Key)
-        Sub Key = HMAC-SHA512(Master Public Key + Master Chain Key + 索引數(0x00 到 0x7fffffff))
-        Sub Private Key = Sub Key從左往右取256個字元
-        Sub Chain Key = Sub Key從右往左取256個字元
-        Sub Public Key = SECP256K1(Sub Private Key)
-        Sub Public Key Hash = SHA-256(SHA-256(Public Key)) or RIPEMD160(Public Key)
-        Address = Base58 Check Encode(版本號 +  + Sub Public Key Hash + Sub Public Key Hash前四個字元)
-    ```
-        
-    其他還有像隔離見証錢包，版本號為BC，詳情可以參考BIP文件
 
-    [https://github.com/bitcoin/bips](https://github.com/bitcoin/bips)
+{:start="1"}
+1. 單簽錢包計算方式，版本號為1
+{% highlight javascript %}
+Private Key = SHA-256(隨機數)
+Public Key = SECP256K1(Private Key)
+Public Key Hash = SHA-256(SHA-256(Public Key)) or RIPEMD160(Public Key)
+Address = Base58 Check Encode(版本號 + Public Key Hash + Public Key Hash前四個字元)
+{% endhighlight %}
+    
+{:start="2"}
+2. 多簽錢包計算方式，版本號為3
+{% highlight javascript %}
+mnemonic = Peter的錢包
+Master Key = HMAC-SHA512(mnemonic + (選填)密碼)
+Master Private Key = Master Key從左往右取256個字元
+Master Chain Key = Master Key從右往左取256個字元
+Master Public Key = SECP256K1(Master Private Key)
+Sub Key = HMAC-SHA512(Master Public Key + Master Chain Key + 索引數(0x00 到 0x7fffffff))
+Sub Private Key = Sub Key從左往右取256個字元
+Sub Chain Key = Sub Key從右往左取256個字元
+Sub Public Key = SECP256K1(Sub Private Key)
+Sub Public Key Hash = SHA-256(SHA-256(Public Key)) or RIPEMD160(Public Key)
+Address = Base58 Check Encode(版本號 +  + Sub Public Key Hash + Sub Public Key Hash前四個字元)
+{% endhighlight %}
+    
+其他還有像隔離見証錢包，版本號為BC，詳情可以參考BIP文件
+
+[https://github.com/bitcoin/bips](https://github.com/bitcoin/bips)
     
 ## 8. 總結
 

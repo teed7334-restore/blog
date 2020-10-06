@@ -16,9 +16,9 @@ OS: ubuntu 18.04.3 Desktop
 當然，最好的方式是使用Ubuntu Server，沒有XWindow，用另一台PC的virt-manager連到這台主機進行管理
 
 ## 安裝KVM與管理工具
-```
+{% highlight console %}
 apt install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils virt-manager
-```
+{% endhighlight %}
 
 ## 設定群組
 安裝完之後，我們找到虛擬機管理員
@@ -30,29 +30,29 @@ apt install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils virt-manager
 ![](/blog/images/202010062117.jpg)
 
 我們先用以下指令查看libvirtd有沒有啟動，一般來說都會啟動，是權限的問題
-```
+{% highlight console %}
 ps aux | grep libvirtd
-```
+{% endhighlight %}
 
 ![](/blog/images/202010062118.jpg)
 
 之後，我們再查看我們當前的使用者有沒有在libvirt群組當中
-```
+{% highlight console %}
 less /etc/group
-```
+{% endhighlight %}
 
 ![](/blog/images/202010062119.jpg)
 
 如果有，就請重新Login之後，就可以啟動群組權限了，如果沒有，可以自己透過以下指令自己加進去
-```
+{% highlight console %}
 usermod -a -G libvirt [使用者帳號]
-```
+{% endhighlight %}
 
 ## 設定橋接
 話說Ubuntu網路設定檔不是/etc/network/interface了，而是改用yaml做設定，在/etc/netplan底下，我的是叫01-network-manager-all.yaml
 
 因為我是用筆電架設的，所以網路介面是wlp1s0，如果是有線網路請自己查詢自己的網路介面名稱，以下是我的設定
-```
+{% highlight yaml %}
 # Let NetworkManager manage all devices on this system
 network:
   version: 2
@@ -65,12 +65,12 @@ network:
         dhcp4: yes
         interfaces:
           - wlp1s0
-```
+{% endhighlight %}
 
 上面設定的意思是說，我將原本透過wifi連線的網路介面wlp1s0取消，改接到br0這個橋接器中，然後開啟br0這個橋接器的DHCP，讓橋接器底下所有的網路介面都可以互通，設完之後我們重啟NetworkManager服務
-```
+{% highlight console %}
 systemctl restart NetworkManager.service
-```
+{% endhighlight %}
 
 ## 一個IP多個Web Site架設範例
 我們Server用Debian Stable進行架設，會有二台，分別是Web1與Web2，可以到以下網站抓Debian Stable 最小安裝檔iso
@@ -122,68 +122,67 @@ systemctl restart NetworkManager.service
 中間安裝Linux的過程略過，請自行依照需求設定安裝細項，如果是開發機我會這樣設計
 
 Directory:
-```
+{% highlight javascript %}
 /boot ext4 50MB
 /swap N/A 8192MB
 / ext4 All Spaces
-```
+{% endhighlight %}
 
 Config:
-```
+{% highlight javascript %}
 Host Name: Web1
 Domain Name(範例): taipay.com.tw
 Timezone: Asia/Taipei
-```
+{% endhighlight %}
 
 Install:
-```
+{% highlight javascript %}
 SSH Server
 Base System
-```
+{% endhighlight %}
 
 安裝完系統之後，重新開機完，我們可以打以下指令查看KVM給我們的VM分配的IP
-```
+{% highlight console %}
 ip addr
-```
+{% endhighlight %}
 
 然後可以透過以下指令查詢Gateway
-```
+{% highlight console %}
 router -n
-```
+{% endhighlight %}
 
 好比我被分配到的IP是192.168.122.142，而Gateway是在192.168.122.1，網卡是叫ens3，這時我們要進行設定，將這組IP設置成靜態IP，這樣下次開啟VM時，才能確保都是同一組設定
-
-```
+{% highlight console %}
 vim /etc/network/interface
-```
+{% endhighlight %}
 
 將以下設定
-```
+{% highlight console %}
 iface ens3 inet dhcp
-```
+{% endhighlight %}
 
 改成如下
-```
+{% highlight conf %}
 iface ens3 inet static
 address 192.168.122.142
 netmask 255.255.255.0
 gateway 192.168.122.1
-```
+{% endhighlight %}
 
 然後重新啟用網路設定
-```
+{% highlight console %}
 systemctl restart networking
-```
+{% endhighlight %}
 
 或是重新啟動
-```
+{% highlight console %}
 reboot
-```
+{% endhighlight %}
 
 然後我們下以下指令安裝Nginx
-```
+{% highlight console %}
 apt install nginx
-```
+{% endhighlight %}
 
 安裝完了之後，修改/var/www/html/index.nginx-debian.html，裡面給它用HTML在Title與Body中標一個大大的Web1
 
@@ -194,12 +193,12 @@ apt install nginx
 如果看得見網頁，代表你的Host OS是可以連到Guest OS的，所以接下來我們要設定讓外面的主機也可以看見你KVM上的網頁
 
 我們先在Host OS安裝Nginx
-```
+{% highlight console %}
 apt install nginx
-```
+{% endhighlight %}
 
 進入/etc/nginx/sites-available中，新增web1設定檔，並寫入以下設定
-```
+{% highlight conf %}
 server {
     listen 80;
     server_name web1.taipay.com.tw;
@@ -207,42 +206,42 @@ server {
         proxy_pass http://192.168.122.142:80;
     }
 }
-```
+{% endhighlight %}
 
 然後透過以下指令將網頁設定檔移到/etc/nginx/sites-enabled中
-```
+{% highlight console %}
 ln -s /etc/nginx/sites-available/web1 /etc/nginx/sites-enabled
-```
+{% endhighlight %}
 
 然後重新啟動Nginx，這樣反向代理就設定完成了
-```
+{% highlight console %}
 systemctl restart nginx
-```
+{% endhighlight %}
 
 然後我們要怎麼用外部機器連到我們的Guest OS裡面呢？假使我們沒有買DNS，以下是我透過其他台NB，作業系統是Ubuntu Desktop 18.04.3的客戶端做的測試
 
 請先在該台NB的/etc/hosts寫入一行
-```
+{% highlight conf %}
 192.168.20.157 web1.taipay.com.tw
-```
+{% endhighlight %}
 
 請注意，這時前面的IP，是我Host OS的IP，而不是輸入Guest OS的IP，因為你要先連到Host OS，才能透過Host OS底下的Nginx針對網址做解析，並反向代理指向到正確的VM，也就是Web1主機上，之前我們在Host OS寫入的web1檔案，裡面的server_name，就是對應網址用的
 
 那如果說我有web1 ~ web5呢？但我沒有DNS，一樣你可以在你客戶端NB的/etc/hosts做以下設定
-```
+{% highlight conf %}
 192.168.20.157 web1.taipay.com.tw
 192.168.20.157 web2.taipay.com.tw
 192.168.20.157 web3.taipay.com.tw
 192.168.20.157 web4.taipay.com.tw
 192.168.20.157 web5.taipay.com.tw
-```
+{% endhighlight %}
 
 這樣就算只有一個IP，也可以因為吃的網址不同，而進入不同主機了
 
 ## Nginx SSH 反向代理
 1. 編輯 /etc/nginx/nginx.conf
 2. 參考以下設定，寫入到http之前，events的下面
-```
+{% highlight conf %}
 stream {
     server { #格式
         listen [你對外監聽的Port];
@@ -253,8 +252,8 @@ stream {
         proxy_pass 192.168.122.132:22;
     }
 }
-```
+{% endhighlight %}
 3. 重新啟動Nginx
-```
+{% highlight console %}
 sudo systemctl restart nginx
-```
+{% endhighlight %}
