@@ -6,7 +6,7 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: 達人手札
+title: 達人手札 v2.0
 brief-intro: 輕描淡寫|不求奢華
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "https://teed7334-restore.github.io" # the base hostname & protocol for your site
