@@ -68,4 +68,4 @@ defaults:
     values:
       image: true
 
-# theme: jekyll-theme-slate
+theme: jekyll-theme-slate
