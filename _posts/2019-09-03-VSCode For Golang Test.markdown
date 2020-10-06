@@ -8,7 +8,7 @@ excerpt: VSCode For Golang Test
 mathjax: true
 ---
 
-![/images/202010061826.png](/images/202010061826.png)
+![/blog/images/202010061826.png](/blog/images/202010061826.png)
 
 話說現在寫Golang可以透過VSCode來自己生測試碼，想想過去那個寫PHP還要自己寫一堆測試碼的日子實在有夠…!@#$%^&*()
 
@@ -18,17 +18,17 @@ mathjax: true
 
 首先，我們先找一段要產生Unit Test的Go Function，像這樣將所有的程式碼給反白起來
 
-![](/images/202010061830.jpg)
+![](/blog/images/202010061830.jpg)
 
 右鍵->Go:Generate Unit Tests For Function
 
 之後，他就會在你程式碼所在的資料夾，產生一個[檔名]_test.go的檔案
 
-![](/images/202010061831.jpg)
+![](/blog/images/202010061831.jpg)
 
 然後你就可以在註解的TODO: Add test cases裡面，加上你代入參數的"值"，好比這樣
 
-![](/images/202010061832.jpg)
+![](/blog/images/202010061832.jpg)
 
 
 ```
@@ -73,14 +73,14 @@ mathjax: true
 
 這時，你可以點Function上方的run test，就可以運行Unit test
 
-![](/images/202010061833.jpg)
+![](/blog/images/202010061833.jpg)
 
 如果你要一次運行資料夾內包含子資料夾裡面的全部測試碼，可以在該資料夾下輸入以下指令
 ```
 go test ./...
 ```
 
-![](/images/202010061834.jpg)
+![](/blog/images/202010061834.jpg)
 
 如果你需要一次運行所有$GOPATH資料夾下包含子資料夾的全部則試碼，可以直接下以下指令
 ```

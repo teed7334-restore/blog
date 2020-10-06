@@ -8,7 +8,7 @@ excerpt: 新增錢包
 mathjax: true
 ---
 
-![/images/202010061339.jpg](/images/202010061339.jpg)
+![/blog/images/202010061339.jpg](/blog/images/202010061339.jpg)
 
 「我們可以透過自己熟悉的程式語言來開發比特錢包，每個錢包位址都是由密碼學計算得出」
 

@@ -8,7 +8,7 @@ excerpt: 密碼學基礎概論
 mathjax: true
 ---
 
-![/images/202010061813.png](/images/202010061813.png)
+![/blog/images/202010061813.png](/blog/images/202010061813.png)
 
 ## 1. 密碼學用語
 

@@ -8,7 +8,7 @@ excerpt: 新增錢包
 mathjax: true
 ---
 
-![/images/202010061324.jpg](/images/202010061324.jpg)
+![/blog/images/202010061324.jpg](/blog/images/202010061324.jpg)
 
 「在透過比特幣投資之前，我們需要新增一個錢包來存放比特幣」
 

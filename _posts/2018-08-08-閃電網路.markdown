@@ -8,7 +8,7 @@ excerpt: 閃電網路
 mathjax: true
 ---
 
-![/images/202010061556.jpg](/images/202010061556.jpg)
+![/blog/images/202010061556.jpg](/blog/images/202010061556.jpg)
 
 閃電網路最初的設想為中心輻射狀網路，透過暫時鏈下交易用以解決比特幣交易過慢問題
 

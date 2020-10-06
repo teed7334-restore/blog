@@ -8,7 +8,7 @@ excerpt: 一小時Docker速成
 mathjax: true
 ---
 
-![/images/202010061408.jpg](/images/202010061408.jpg)
+![/blog/images/202010061408.jpg](/blog/images/202010061408.jpg)
 
 您可以到從以下網址安裝符合你OS的Docker
 

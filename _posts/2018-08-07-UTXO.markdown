@@ -8,7 +8,7 @@ excerpt: UTXO
 mathjax: true
 ---
 
-![/images/202010061401.jpg](/images/202010061401.jpg)
+![/blog/images/202010061401.jpg](/blog/images/202010061401.jpg)
 
 「所謂的比特幣，其實指的就是UTXO，UTXO記錄了這個比特幣是由那位礦工挖出，最後又如何到你的手上」
 
