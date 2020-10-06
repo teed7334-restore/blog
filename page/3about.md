@@ -9,6 +9,12 @@ type: page
 * content
 {:toc}
 
+## 关于我
+
+# Peter Cheng
+<br />
+<iframe src="https://githubbadge.appspot.com/teed7334-restore?s=1" style="border: 0;height: 142px;width: 200px;overflow: hidden;" frameBorder="0"></iframe>
+
 ## 联系我
 
 * GitHub：[teed7334-restore](https://github.com/teed7334-restore)
