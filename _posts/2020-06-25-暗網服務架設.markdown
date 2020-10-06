@@ -1,0 +1,150 @@
+---
+layout: post
+title:  "暗網服務架設"
+date:   2020-06-25 09:43:00
+categories: DevOps
+tags: 技術
+excerpt: 暗網服務架設
+mathjax: true
+---
+
+![](/blog/images/202010070035.jpg)
+
+## 前言
+暗網，是比目前網際網絡資安要求還要高的網路，與一般網際網路不同的地方在於，你在網際網路輸入網址，要連到網站之時，你的電腦需要先連到DNS，將網址換成對應的IP，再經由經過每一個節點，最後才能到達你的網站
+
+白話一點的說法就是，好比今天我要從新店到洛陽賞牡丹，賞牡丹是好比網站提供的服務，從新店到洛陽，我可能要先去搭捷運到北門，轉機場捷運，或是直接搭小黃到桃園機場，在這之前，我可能在數天前還是數個月前，要先和航空公司訂好機票，飛機又有分直飛還是轉機，最後透過飛機與車子到達賞牡丹的地方，這些一個一個節點的選擇，就好比我們的網際網路，只是凡走過必留下痕跡，你透過網路叫車，信用卡付款，會留下消費記錄，坐飛機要提供護照等資訊，所以幾乎是等於裸奔，只差有資料的單位，要查還不要查而已
+
+但暗網的型態不同，你每經過一個節點，它都會做一層加密封裝，上一個節點的人不知道你是從那裡來的，如果要追蹤來源，則必需一層一層像剝洋蔥一樣，一層一層剝下去，所以暗網又叫洋蔥網路
+
+正因為暗網的行蹤是這麼難以追查其來源，所以也確保了它高度的隱祕性，也正因為如此，所以它可以在上面做很多你在一般網路上不敢做的事，有人說暗網很不安全，上面充滿了色情、暴力與不可告人，國家與國家之間的秘密，但其實暗網和網際網路是一樣的，網路上也有色情的網站，你要找一定找得到，你不想看自然也不會到一些奇怪的地方，何況網際網路上還有Google這種搜尋霸主，暗網的線上搜尋，則是完全……屙……如果你有不錯的，可以介紹給我，它連黃頁都做不好啊，一堆網址連結都連不上了
+
+在暗網上面，也有一些電子商城，電子商城也是會賣一些很神奇的東西，好比歐洲某國的駕照、哈佛的學歷、神奇國家護照、裡面有錢可以刷的信用卡等等，我是沒有買過這些啦，不過我買過電子書，那時是用比特幣進行交易的，後來有一陣子暗網改由摩門幣進行交易，摩門幣在交易時，會像暗網一樣，故意遮蔽來源位置，所以造成金流特別難被有心人仕查詢
+
+## 安裝
+
+因為我平時都在Linux底下，所以我只介紹主流Linux的安裝方式
+
+會安裝Tor與Privoxy二個套件，Tor是連到暗網的工具，Privoxy是做代理伺服器用的
+
+Debian
+{% highlight console %}
+apt install tor privoxy
+{% endhighlight %}
+
+Redhat
+{% highlight console %}
+yum install tor privoxy
+{% endhighlight %}
+
+Arch
+{% highlight console %}
+pacman -S tor privoxy
+{% endhighlight %}
+
+## 設定Proxy Server
+{% highlight console %}
+vim /etc/privoxy/config
+{% endhighlight %}
+
+指定要代理的Tor Port，預設是9050
+{% highlight conf %}
+forward-socks5t / 127.0.0.1:9050 .
+{% endhighlight %}
+
+指定不想透過Tor來連接的位置
+{% highlight conf %}
+forward 192.168.*.*/ .
+forward 10.*.*.*/ .
+forward 127.*.*.*/ .
+{% endhighlight %}
+
+設定要監聽的IP，好比我主機的對外IP是1.2.3.4，對內IP是10.1.0.9
+
+如果我希望網路上所有人都可以使用我的主機做代理，我可以這麼做
+{% highlight conf %}
+listen-address :8118
+{% endhighlight %}
+
+如果我只希望只有區網的人才能使用我的主機做代理，我可以這麼做
+{% highlight conf %}
+listen-address 10.1.0.9:8118
+{% endhighlight %}
+
+如果我只希望自已的主機才能連上自已的主機做代理，我可以這麼做
+{% highlight conf %}
+listen-address 127.0.0.1:8118
+{% endhighlight %}
+
+如果我不想讓誰連入自已的主機，還是只想讓誰連入自已的主機，我可以這麼做
+{% highlight conf %}
+permit-access 來源IP[:連接埠][/網路遮罩] [目的IP[:連接埠][/網路遮罩]]
+deny-access   來源IP[:連接埠][/網路遮罩] [目的IP[:連接埠][/網路遮罩]]
+{% endhighlight %}
+
+Example
+
+我允許10.1.0.5/16 IP的電腦連入我的主機
+但是10.1.0.8 IP的電腦，無法連到Google
+{% highlight conf %}
+permit-access  10.1.0.5/16
+deny-access    10.1.0.8    www.google.com
+{% endhighlight %}
+
+啟用你的Privoxy服務
+{% highlight console %}
+systemctl enable privoxy
+{% endhighlight %}
+
+開啟你的Privoxy服務
+{% highlight console %}
+systemctl start privoxy
+{% endhighlight %}
+
+## 使用Proxy Server
+
+以Firefox為例
+![](/blog/images/202010070036.jpg)
+
+然後去MyIP的網站看一下，IP不一樣就代表有走Tor出去了
+[https://myip.com.tw/](https://myip.com.tw/)
+
+## 將服務架設於暗網
+
+好比我今天有一個API服務，吃Port 20080，我希望它可以在暗網底下被呼叫到
+
+你可以在任何一個資料夾底下，建立一個torrc.in的檔案，並且新增一個資料夾，供存放金鑰與暗網網址使用，我的資料結構如下
+
+/home/petercheng/pdfapi/torrc.in
+
+/home/petercheng/pdfapi/services/
+
+以上，無論是資料夾還是設定檔，麻煩都設定成權限400
+{% highlight console %}
+chmod -R 400 /home/petercheng/pdfapi
+{% endhighlight %}
+
+設定你的暗網資訊
+{% highlight console %}
+vim /home/petercheng/pdfapi/torrc.in
+{% endhighlight %}
+
+將資料夾指定給Tor，並監控30080 Port做為在暗網中連接服務使用
+{% highlight conf %}
+# torrc.in
+
+HiddenServiceDir /home/petercheng/pdfapi/services/
+HiddenServicePort 30080 127.0.0.1:20080
+{% endhighlight %}
+
+啟用服務
+{% highlight console %}
+tor -f torrc.in
+{% endhighlight %}
+
+如果不希望終端機被一堆字佔用，可以透過以下方式開啟
+{% highlight console %}
+nohup tor -f torrc.in &
+{% endhighlight %}
+
+之後你再到你的/home/petercheng/pdfapi/services資料夾中，會有一個hostname的檔案，裡面的內容就是連到你主機用的暗網網址
