@@ -9,7 +9,7 @@
 title: 達人手札
 brief-intro: 輕描淡寫|不求奢華
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://teed7334.github.io" # the base hostname & protocol for your site
+url: "https://teed7334-restore.github.io" # the base hostname & protocol for your site
 
 permalink: /:year/:month/:day/:title/
 
