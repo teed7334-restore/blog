@@ -1,0 +1,66 @@
+---
+layout: post
+title:  "UTXO"
+date:   2018-08-07 08:37:00
+categories: 區塊鏈技術
+tags: 技術
+excerpt: UTXO
+mathjax: true
+---
+
+![/images/202010061401.jpg](/images/202010061401.jpg)
+
+「所謂的比特幣，其實指的就是UTXO，UTXO記錄了這個比特幣是由那位礦工挖出，最後又如何到你的手上」
+
+在談UTXO之前，我們先來談談現在銀行常用的Account Model
+
+## 現在的銀行都是怎麼記賬的？
+今天Alice與Bob都在瑞士銀行開了一個銀行帳號，且各自存了USD 1,000進去，這時資料庫應該是這樣記的
+```
+id = 000012345
+name = alice
+amount = 1000
+
+id = 000012346
+name = bob
+amount = 1000
+```
+
+今天當Alice轉賬USD 200給Bob時，進行資料庫Query時，我們需要同時完成以下二個步驟才算完成
+1. 將Alice的amount減去200
+2. 將Bob的amount加上200
+
+但是今天比特幣是沒有記錄帳戶餘額的賬本的，那它又是如何做計算的呢
+
+## 比特幣是如何記賬的
+每個比特幣的錢包，是以錢包裡面有的UTXO來得知有多少可用餘額的，每一筆UTXO，指的都是未花費交易支出，每一筆UTXO都會指向一個錢包的位址，聲明它的擁有者
+
+每一筆UTXO都是以聰為單位，一聰等同於0.000000001BTC
+
+每一筆UTXO，都有一個txid
+
+今天Alice透過挖礦得到5BTC，Alice會得到以下UTXO
+```
+txid = #00021
+input = 
+    txid = #00135 礦工打的，UTXO面額2 BTC
+address = 3FYxb7tnfv9sLSB9bFBnjunY3RDFChkBSW Alice的錢包位址
+```
+
+而當Alice要轉2BTC給Bob時，會由Alice先將5BTC給Bob，Bob又打3BTC還給Alice
+```
+txid = #00032
+input = 
+    txid = #00021 Alice的UTXO編號
+address = 1AMWTBR3JWBJxjJ8KF5CtjXhRSoYrHuZxP Bob的錢包位置
+
+txid = #00048
+output =
+    txid = #00032
+    amount = 300000000
+address = 3FYxb7tnfv9sLSB9bFBnjunY3RDFChkBSW Alice的錢包位址
+```
+## UTXO vs Acccount Model優劣
+UTXO：原理簡單、易於擴展、高度並行、隱匿性強
+
+Account：易於理解、節省空間、易於實現、模式成熟

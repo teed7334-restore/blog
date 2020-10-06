@@ -1,0 +1,185 @@
+---
+layout: post
+title:  "一小時Docker速成"
+date:   2018-08-07 18:55:00
+categories: Docker
+tags: 虛擬化
+excerpt: 一小時Docker速成
+mathjax: true
+---
+
+![/images/202010061408.jpg](/images/202010061408.jpg)
+
+您可以到從以下網址安裝符合你OS的Docker
+
+[https://www.docker.com/community-edition#/download](https://www.docker.com/community-edition#/download)
+
+## Docker與Virtualbox/VMWare差別
+Virtualbox與VMWare都算是虛擬機器軟體，都是透過軟體去摸擬出硬體環境，只是差在Virtualbox是半虛擬化軟體，有些設備還是吃現有硬體資源，而VMWare是全虛擬化軟體，所有的硬體設備都會幫你用軟體模擬出來
+
+所以這類的虛擬機器，我們都要在裡面安裝OS，最後再設定我們要安裝的套件與服務
+
+Docker和一般虛擬機器不同的地方在於，它在Unix Like OS底下，是透過Kernel去切割出一塊完整的User Space，而在Windows底下，它是透過Hyper-V去產生User Space
+
+Docker的Image裡面一樣有OS，但它的OS只是為了提供執行單一服務所需的相關Library與環境而己，我們可以將Docker的Image想像成，它是一個資料夾，資料夾裡面有很多必須的檔案，但資料夾裡面同時也有我們運行服務所需的執行檔
+
+一般來說，也許我們會在VirtualBox/VMWare當中，安裝完OS，再安裝上一堆我們要啟動的服務套件，但在Docker裡面，我們通常是一個Image一個套件，一個Container一個服務
+
+## Docker Image與Container的概念
+Dokcer的所有Image通通都是唯讀的，你可以想像成你在VirtualBox/VMWare裡面安裝了一個OS，但無論你做任何的動作，最後在你重啟虛擬機器時，裡面的環境與你第一次啟用時一模一樣
+
+而Container是運行Image檔的容器，一個Image可以有多個Container去起動它
+
+## 如何抓到我們要的Docker Image
+我們可以進入[Docker Hub](https://hub.docker.com/)，透過搜尋找到我們需要的Image，我以Redis為例
+
+[https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=Redis&starCount=0](https://hub.docker.com/search/?isAutomated=0&isOfficial=0&page=1&pullCount=0&q=Redis&starCount=0)
+
+透過上面的網址，我們可以找到分數最高的Redis項目進入
+
+[https://hub.docker.com/\_/redis/](https://hub.docker.com/\_/redis/)
+
+在畫面的右上方，有一個docker pull redis，這就是透過指令行自動下載Image的方法，而我們再點入上方tags的頁籤，可以看見有許許多多不同版本的Redis可以安裝
+
+抓取Image命令
+```
+$ docker pull [image名稱]:[版本編號]
+```
+
+以安裝最新版redis為例
+```
+$ docker pull redis:latest
+```
+
+## 如何運行Docker Container
+運行Docker Container命令如下
+```
+$ docker run --name [Container Name] -p [Host OS Port]:[Guest OS Port] -d [Image Name]
+```
+
+好比我們現在要運行三個redis，容器名分別為redis1、redis2、redis3，容器內部的port與本地的port做mapping，分別對應到6379、6378、6377，那我們可以這樣下指令
+```
+$ docker run --name redis1 -p 6379:6379 -d redis;
+$ docker run --name redis2 -p 6378:6378 -d redis;
+$ docker run --name redis3 -p 6377:6378 -d redis;
+```
+
+最後我們可以透過以下指令查看容器是否有被起動
+```
+docker ps -a | grep redis
+```
+
+## 如何重開機之後，可以自動運行背景執行服務
+自動運行Docker Container命令如下
+```
+$ docker run --name [Container Name] -p [Host OS Port]:[Guest OS Port] -d [Image Name] --restart=always
+```
+
+以上面redis1為例，我們可以下以下指令達到自動運行
+```
+$ docker run --name redis1 -p 6379:6379 -d redis --restart=always
+```
+
+## 如何將外部的資料夾掛入Docker Container中
+運行Docker Container命令如下
+```
+$ docker run --name [Container Name] -v [Host OS Directory]:[Guest OS Directory]
+```
+
+好比我們要透過Docker運行Python3，我們可以命令可以這麼下
+```
+$ docker run --name python -v /home/peter/WebSite:/app -p 8080:8080 -it python bash
+```
+命令行中的-it，指的是互動模式，而之前使用的-d指的是背景執行
+
+接下來我們就可以進入到Docker Container中的Bash底下，進入/app資料夾之後，可以發現就是我們掛上的資料夾/home/peter/WebSite，然後你就可以透過IDE開始開發你的Python程式碼，於Docker Container中下指令運行
+```
+$ python xxxx.py
+```
+
+## 如何進入Docker Container
+進入Docker Container命令如下
+```
+$ docker exec -it [Container Name] bash
+```
+
+## 如何移除己運行的Container
+移除Docker Container命令如下
+```
+$ docker rm -f [Container Name]
+```
+
+## 如何讓Docker Container中的服務可以互通
+建立Docker Container連結的命令如下
+```
+$ docker run --name [Container Name] --link [Container Name]
+```
+
+好比今天我們運行Python的容器要連到Redis1、Redis2、Redis3這三個容器
+```
+$ docker run --name python --link redis1 --link redis2 --link redis3 -it python bash
+```
+
+當我們進入Container之後，我們可以透過ping [Container Name]來得知是否有連線上
+
+## 如何將Docker Cotainer中的資料Copy到本機來
+當我們用Docker建置Nginx與MySQL這類的服務時，我們一開始是不會有nginx.conf與my.cnf檔案的，我們要從Docker Cotainer中，將nginx.conf與my.cnf複製出來修改之後，再用-v的方式將資料夾掛到Container裡面去，這時我們可以使用以下指令
+
+```
+$ docker cp [Container Name]:[Container Directory or File] [save as to local path]
+```
+
+好比今天我要將python Container中的~/.profile複製到本機來，可以下以下指令
+```
+$ docker cp python:/root/.profile profile
+```
+
+## 我如何編譯屬於自己的Docker Image
+好比說我今天開發Python，預設的Python Image裡面是沒有VIM編輯器的，但我在Container底下有時會需要VIM編輯器，之前說過，Docker Image是唯讀的，那我可以如何自行編譯我需要的Docker Image
+
+
+首先，在你的資料夾中新增一個Dockerfile的檔案，記得大小寫要相符，而Dockerfile檔案內容如下
+```
+FROM python:latest
+
+RUN apt update -y; apt install vim;
+
+WORKDIR /app
+```
+
+當中，FROM代表我要從那一個Image來做修改，RUN指的是要在Shell底下運行的命令，WORKDIR指的是當我進入Container之後的預設目錄
+
+接下來我們可以再撰寫一個compilerPython.sh的檔案，檔案內容如下
+```
+$ docker build -t python-dev .
+```
+
+透過chmod +x compilerPython.sh把執行的權限給compilerPython.sh之後，就可以透過./compilerPython.sh運行Shell Script
+
+上面那一行的意思是，請透過我的Dockerfile，編譯出一個叫python-dev的Image檔
+
+最後我們可以透過以下指令來查看是否擁有這個Image檔
+```
+$ docker images | grep python-dev
+```
+
+## 我如何刪除不要的Docker Image檔案
+刪除Docker Image的命令如下
+```
+$ docker rmi -f [Image Name]
+```
+
+好比我們要刪掉之前新增的python-dev的Image，可以下以下指令
+```
+$ docker rmi -f python-dev
+```
+
+## 後記
+1. Docker for Windows，必須要Windows有安裝Hyper-V才有辦法運行，而且Win10要Pro版才有辦法安裝Hyper-V, Home版是無法安裝Hyper-V的，安裝Hyper-V請參照以下網址
+[https://docs.microsoft.com/zh-tw/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v](https://docs.microsoft.com/zh-tw/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)
+
+2. Docker pull時常常發生Timout Error的情況，可以透過以下方式重新注冊Docker pull倉庫
+[https://philipzheng.gitbooks.io/docker_practice/content/repository/local_repo.html](https://philipzheng.gitbooks.io/docker_practice/content/repository/local_repo.html)
+
+3. 要怎麼將自製的Docker Image推上Docker Hub？
+[https://larrylu.blog/share-image-on-dockerhub-ccb7d9b26fa8](https://larrylu.blog/share-image-on-dockerhub-ccb7d9b26fa8)

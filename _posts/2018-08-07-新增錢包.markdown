@@ -1,0 +1,53 @@
+---
+layout: post
+title:  "新增錢包"
+date:   2018-08-07 02:56:00
+categories: 區塊鏈技術
+tags: 技術
+excerpt: 新增錢包
+mathjax: true
+---
+
+![/images/202010061339.jpg](/images/202010061339.jpg)
+
+「我們可以透過自己熟悉的程式語言來開發比特錢包，每個錢包位址都是由密碼學計算得出」
+
+一般來說，比特錢包分為以下三種
+1. 單簽錢包，錢包位址1開頭
+2. 多簽錢包，錢包位址3開頭
+3. 隔離見証錢包，錢包位址bc開頭
+
+## 單簽錢包
+1. 透過SHA256產生私鑰
+2. 私鑰經過橢圓曲線secp256k1生成公鑰
+3. 公鑰經過BASE58Check Encode生成錢包位址
+
+## 多簽錢包
+1. 助記詞加上鹽值("mnemonic" + (optional) passphrase)進行PBKDF2計算
+2. 將PBKDF2的值再經過HMAC-SHA512計算產生512bit字節密鑰
+3. 將512bit字節從左到右取256bit成主私鑰，從右到左取256bit成主鏈碼
+4. 主私鑰經過橢圓曲線secp256k1生成主公鑰
+5. 最後由主公鑰加上鏈碼與索引數(0x00 到 0x7fffffff)經過HMAC-SHA512產生512bit字節
+6. 將512bit字節從左到右取256bit成子私鑰，從右到左取256bit成子鏈碼
+7. 子私鑰採用與主私鑰產生公鑰的方式生成子公鑰
+8. 多筆子公鑰經過HASH160生成160bit字節
+9. 最後160字節經過BASE58Check Encode生成錢包位址
+
+## 隔離見証錢包
+1. 一樣透過私鑰生成公鑰
+2. 公鑰經過witness PublicKey Hash生成Script
+3. Script經過HASH160生成160bit字節
+4. 最後160字節經過BASE58Check Encode生成錢包位址
+
+## 參考資料
+[BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
+
+[BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+
+[BIP44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki)
+
+[BIP141](https://github.com/bitcoin/bips/blob/master/bip-0141.mediawiki)
+
+[BIP143](https://github.com/bitcoin/bips/blob/master/bip-0143.mediawiki)
+
+[BIP173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)

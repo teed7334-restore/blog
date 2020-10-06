@@ -4,8 +4,8 @@ layout: default
 
 <div class="page clearfix" index>
     <div class="left">
-        <h1>Welcome to HyG's Blog!</h1>
-        <small>这里记录着我的前端学习之路</small>
+        <h1>{% if page.title %}{{ page.title | escape }}{% else %}{{ site.title | escape }}{% endif %}</h1>
+        <small>{% if site.description_footer %} {{site.description_footer}} {% endif %}</small>
         <hr>
         <ul>
             {% for post in paginator.posts %}
