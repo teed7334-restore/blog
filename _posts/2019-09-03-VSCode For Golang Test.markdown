@@ -2,8 +2,8 @@
 layout: post
 title:  "VSCode For Golang Test"
 date:   2019-09-03 10:57:00
-categories: VSCode
-tags: 開發工具
+categories: 程式語言
+tags: Golang
 excerpt: VSCode For Golang Test
 mathjax: true
 ---
