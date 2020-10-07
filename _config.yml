@@ -15,8 +15,9 @@ permalink: /:year/:month/:day/:title/
 
 # other links
 twitter_username:
-facebook_username: 
-github_username:  teed7334-restore
+facebook_username: teed7334
+github_username: teed7334-restore
+gitlab_username: teed7334
 email: teed7334@gmail.com
 weibo_username: 
 zhihu_username: 

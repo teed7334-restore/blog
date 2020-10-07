@@ -16,9 +16,10 @@ type: page
 
 ## 联系我
 
-* Mobile：+886932179286
-* Office：+88607010176852
-* GitHub：[https://github.com/teed7334-restore](https://github.com/teed7334-restore)
-* Gitlab：[https://gitlab.com/teed7334](https://gitlab.com/teed7334)
-* Email：[teed7334@gmail.com](mailto:teed7334@gmail.com)
+* Mobile: +886932179286
+* Office: +88607010176852
+* GitHub: [https://github.com/teed7334-restore](https://github.com/teed7334-restore)
+* Gitlab: [https://gitlab.com/teed7334](https://gitlab.com/teed7334)
+* Email: [teed7334@gmail.com](mailto:teed7334@gmail.com)
+* Facebook: [https://www.facebook.com/teed7334](https://www.facebook.com/teed7334)
 * Linked: [https://www.linkedin.com/in/teed7334/](https://www.linkedin.com/in/teed7334/)
