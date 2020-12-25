@@ -1,0 +1,170 @@
+---
+layout: post
+title:  "用IPFS架設自已的DWeb網站與網路磁碟空間"
+date:   2020-12-25 00:00:00
+categories: DevOps
+tags: 技術
+excerpt: 用IPFS架設自已的DWeb網站與網路磁碟空間
+mathjax: true
+---
+
+## 序言
+
+這次，我們用Docker來建置IPFS環境，用Cloudflare來當CDN，以免費的FreeDNS做DNS轉址
+
+IPFS相關介紹可以參考Wiki
+
+[https://zh.wikipedia.org/zh-tw/%E6%98%9F%E9%99%85%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F](https://zh.wikipedia.org/zh-tw/%E6%98%9F%E9%99%85%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F)
+
+簡單來說，你可以將IPFS當作是BT加上Web空間，它可以當Web Server用，所以你可以利用IPFS來放置靜態網頁，透過AJAX呼叫區塊鏈上的資料，達到匿名主機的目的，另外一種比較簡單的匿名主機，可以參考我的另一篇，[暗網服務架設](/blog/2020/06/25/暗網服務架設/)
+
+## 架設IPFS
+
+這是我撰寫的Docker-Compose檔案，你可以視需求修改成適合你的環境，只要有安裝Docker + Docker Compose，可以透過以下指令運行它
+```
+docker-compose -f [Your docker compose file] up -d --build
+```
+
+docker-composer.yaml
+```
+version: '3.7'
+services:
+  ipfs: 
+    image: 'ipfs/go-ipfs:latest'
+    container_name: 'ipfs'
+    networks:
+      server:
+        ipv4_address: 10.1.0.8
+    ports:
+      - '0.0.0.0:4001:4001'
+      - '0.0.0.0:8080:8080'
+      - '0.0.0.0:5001:5001'
+    volumes:
+      - './ipfs/export:/export'
+      - './ipfs/ipfs:/data/ipfs'
+networks:
+  server:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.1.0.0/16
+```
+
+## 設定IPFS
+
+你可以透過以下網址進入IPFS Web UI
+
+[http://127.0.0.1:5001/webui](http://127.0.0.1:5001/webui)
+
+而當你透過127.0.0.1以外的位置進入IPFS時，它會跳以下的畫面
+
+![](/blog/images/202012252233.png)
+
+這時，你可以選擇透過進入Docker容器，執行它建議的指令
+```
+docker exec -it ipfs sh
+```
+
+也可以由IPFS Web UI的Settings進入，修改它的設定檔，在"Access-Control-Allow-Origin"中加入你要連線的IP與網址
+
+![](/blog/images/202012252234.png)
+
+設定完之後，重啟Docker-Compose
+```
+docker-compose -f [Your docker compose file] down;
+docker-compose -f [Your docker compose file] up -d --build
+```
+
+## 上傳檔案與資料夾
+
+在IPFS Web UI的檔案頁，可以讓你上傳檔案與資料夾
+
+![](/blog/images/202012252235.png)
+
+然後在檔案的選項當中，又可以選擇它的雜湊值，好比
+```
+QmNpSoo7N6hdB14D3UsA19cXHSpDDbg12uRnX9fFRHt6hm
+```
+
+如果說你上傳的是資料夾，那這個資料夾的雜湊值又會隨著資料夾當中檔案的增加、減少而變動，然後你可以透過Cloudflare提供的IPFS Gateway加上雜湊值開啟你的檔案與進入你的資料夾
+```
+https://cloudflare-ipfs.com/ipfs/[你的雜湊值]
+```
+
+但是這種方式相當不好管理檔案，所以我們必須透過IPNS將名字固定下來
+
+## IPNS 設定
+
+進入Docker容器之後，透過以下方式，可以產生一組IPNS的雜湊值，指向你的IPFS位置
+```
+ipfs name publish /ipfs/[你的雜湊值]
+```
+
+跑完IPNS之後，我們一樣會得到一組雜湊值，而你可以透過以下方式取得你上傳的檔案與資料夾
+```
+https://cloudflare-ipfs.com/ipns/[你的雜湊值]
+```
+
+你可以透過以下指令，去將IPNS反解為IPFS位置
+```
+ipfs name resolve [你的雜湊值]
+```
+
+然後，問題來了，IPFS有一個特性，正如我之前說的，你上傳一個資料夾，裡面可能有3個檔案好了，然後你可以透過IPFS取得一組雜湊值，但如果之後你資料夾中的檔案有要變動，好比刪掉一個檔案，新增二個檔案好了，這時資料夾的雜湊值就會又改變了，而這個時候，如果你用舊的IPFS位置，還是舊的IPNS位置進入，你只會進到"變動前"的資料夾，而"變動後"的IPFS位置已經變了，你又要重新做一次IPNS綁定，但偏偏新綁定的位址，又和上一次綁定的位置又不一樣了，所以這時，我們需要透過指定加密金鑰來固定IPNS的位置
+
+首先，我們先打一隻金鑰
+```
+ipfs key gen --type=rsa --size=2048 [金鑰名]
+```
+
+好比我們打一隻叫test的金鑰好了
+```
+ipfs key gen --type=rsa --size=2048 test
+```
+
+這時，我們可以透過以下指令，看見我們的鑰匙圈中有一把叫test的金鑰
+```
+ipfs key list
+```
+
+之後，不管你的資料夾中的檔案如何變動，你只要透過以下的指定，透過金鑰來綁定位置，IPNS的位置就會一直都是一樣的
+```
+ipfs name publish --key=[金鑰名] /ipfs/[你的雜湊值]
+```
+
+在達成固定IPNS綁定IPFS位置之後，我們會發現，那段超長的網址真得好不利於人類記憶啊，所以接下來，我們要將那串不好記的雜湊值，透過免費的DNS服務，置換成易於記憶的IPNS網址
+
+## DNSLink 設定
+
+這時，我們可以進入這個老牌的DNS網站，去註冊一個帳號
+
+[https://freedns.afraid.org/](https://freedns.afraid.org/)
+
+然後透過選單，進入subdomain頁面
+![](/blog/images/202012252237.png)
+
+通常一開始進入，資料應該是全空白的，而這個是我已經設定好的三個subdomain
+
+我們可以透過按下add，進入這個頁面行進設定
+![](/blog/images/202012252238.png)
+
+設定方式如下
+```
+Type: TXT
+Subdomain: [你想要的Subdomain名]
+Domain: [選擇你想要的Domain名，可以透過Many many more available選擇更多Domain名]
+Destination: "dnslink=/ipns/[你的IPNS的雜湊值]"
+TTL: [預設就好]
+Wildcard: [不要打勾]
+```
+
+之後你就可以透過以下網址進入你上傳的資料夾位置了
+```
+https://cloudflare-ipfs.com/ipns/[你設定的subdomain位址]
+```
+
+好比這個是我放佛經的地方，有各種求財、求健康、求智慧的法門，有興趣可以去看一下，怎麼修可以私下問我，我會和你說我自已修的方式，但不代表你用我的方式修就一定能得到你要的利益
+
+[https://cloudflare-ipfs.com/ipns/dnsbuddha.us.to](https://cloudflare-ipfs.com/ipns/dnsbuddha.us.to)
+
+最後，IPFS的特性是，越多人連，速度越快，節點越多，完全不用害怕會沒資料，但還是建議IPFS本地要留一份資料，這樣當所有的節點都沒有資料時，還可以透過你本地的網路分享出去
