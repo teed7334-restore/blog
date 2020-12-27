@@ -8,7 +8,7 @@ excerpt: 研發一課
 mathjax: true
 ---
 
-![/blog/images/202012272314.jpg](/blog/images/202012272314.jpg)
+![/blog/images/202012272314.jpeg](/blog/images/202012272314.jpeg)
 
 ## 序言
 
