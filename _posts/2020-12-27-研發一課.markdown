@@ -8,6 +8,8 @@ excerpt: 研發一課
 mathjax: true
 ---
 
+![/blog/images/202012272314.jpg](/blog/images/202012272314.jpg)
+
 ## 序言
 
 這是我玩狼人殺之後，突然來的靈感想到的變相玩法
