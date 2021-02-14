@@ -176,6 +176,22 @@ Hash
 
 ![/blog/images/202102141121.png](/blog/images/202102141121.png)
 
+## 設定字型
+
+安裝類似Mac OSX字型
+```
+pamac build ttf-roboto
+pamac build adobe-source-sans-pro-fonts
+```
+
+進入 應用程式/設定值/視窗管理程式 做以下設定
+
+![/blog/images/202102141521.png](/blog/images/202102141521.png)
+
+進入 應用程式/設定值/外觀 做以下設定
+
+![/blog/images/202102141524.png](/blog/images/202102141524.png)
+
 ## 設定lightDM
 
 安裝lightdm-webkit2-greeter
