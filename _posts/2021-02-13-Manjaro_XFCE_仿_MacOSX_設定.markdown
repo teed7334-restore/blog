@@ -32,15 +32,6 @@ Sweet Drak UI & Icons
 
 ## 設定佈景主題
 
-安裝佈景主題
-```
-pamac build mojave-gtk-theme-git
-```
-
-這裡比較建議用pamac安裝git版的，這樣日後有upgrade，我們的佈景主題也可以跟著upgrade
-
-另外你也可以用手動安裝的方式
-
 下載地址-
 
 [https://www.xfce-look.org/p/1275087/](https://www.xfce-look.org/p/1275087/)
@@ -56,15 +47,6 @@ pamac build mojave-gtk-theme-git
 將下載之後的壓縮檔，直接解壓縮，放到~/.themes之後，到 應用程式/設定值/外觀/樣式(Y) 裡面，就可以找到該佈景了，並將其指定就設定完成了
 
 ## 設定小圖示
-
-安裝小圖示
-```
-pamac build mojave-ct-icon-theme-git
-```
-
-這裡比較建議用pamac安裝git版的，這樣日後有upgrade，我們的佈景主題也可以跟著upgrade
-
-另外你也可以用手動安裝的方式
 
 下載地址-
 
@@ -137,9 +119,10 @@ pamac build vala-panel-appmenu-registrar-git
 pamac build vala-panel-appmenu-budgie-git
 pamac build vala-panel-appmenu-common-git
 pamac build vala-panel-appmenu-xfce-git
+pamac build vala-panel-appmenu-mate-git
 pamac build vala-panel-appmenu-jayatana-git
 pamac build vala-panel-appmenu-valapanel-git
-pamac build appmenu-gtk-module
+pamac build appmenu-gtk-module-git
 ```
 
 將App Menu移到Global menu
@@ -186,6 +169,12 @@ Hash
 ![/blog/images/202102131955.png](/blog/images/202102131955.png)
 
 其它用法可以參照Albert的Extensions
+
+## 設定視窗控制按鈕方向
+
+進入 應用程式/設定值/視窗管理程式 做以下設定
+
+![/blog/images/202102141121.png](/blog/images/202102141121.png)
 
 ## 設定lightDM
 
