@@ -18,6 +18,8 @@ mathjax: true
 
 我們可以透過VSCode的延伸模組功能，透過搜尋SonarLint，找到該套件，並進行安裝，這樣就可以安裝完成了
 
+![/blog/images/202102260008.png](/blog/images/202102260008.png)
+
 ## 設定SonarLint
 
 輸入[Ctrl + ,]，可以直接進入到設定選單，然後我們在選單最上方搜尋欄位輸入以下字串進行搜尋

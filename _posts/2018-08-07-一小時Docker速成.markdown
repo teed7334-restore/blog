@@ -2,8 +2,8 @@
 layout: post
 title:  "一小時Docker速成"
 date:   2018-08-07 18:55:00
-categories: Docker
-tags: 虛擬化
+categories: 軟體設定
+tags: 軟體設定
 excerpt: 一小時Docker速成
 mathjax: true
 ---
