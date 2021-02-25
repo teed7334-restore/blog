@@ -349,11 +349,57 @@ sysctl -w vm.max_map_count=262144
 {:start="5"}
 5. 進入SonarQube，[http://localhost:9000](http://localhost:9000)
 
-6. 創立一個新項目是針對我們剛剛所新增的course，全部都輸入course就可以
+6. 先Login，如果你沒修改過你的預設帳密，你的帳密應該會是如下
 
-7. 新項目完成之後，它會有一個要你下載Scanner的[連結](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/)
+![/blog/images/202102252253.png](/blog/images/202102252253.png)
 
-8. 新增程式碼掃瞄設定檔，並存成course.properties
+```
+帳號: admin
+密碼: admin
+```
+
+{:start="7"}
+7. 創立一個新項目
+
+![/blog/images/202102260037.png](/blog/images/202102260037.png)
+
+{:start="8"}
+8. 新增你的專案名稱
+
+![/blog/images/202102260041.png](/blog/images/202102260041.png)
+
+{:start="9"}
+9. 新增令牌
+
+![/blog/images/202102260046.png](/blog/images/202102260046.png)
+
+這裡令牌是用在程式呼叫時，取代User/Password用的，可以全部的專案都用同一個令牌，但我個人是比較習慣一個專案一個令牌，權限拆分開
+
+你也可以進入 我的帳號
+
+![/blog/images/202102252258.png](/blog/images/202102252258.png)
+
+進入 安全
+
+![/blog/images/202102252303.png](/blog/images/202102252303.png)
+
+輸入你的token名字，並按下確定
+
+![/blog/images/202102252308.png](/blog/images/202102252308.png)
+
+從你的token建立
+
+![/blog/images/202102260056.png](/blog/images/202102260056.png)
+
+{:start="10"}
+10. 設定你的專案環境
+
+![/blog/images/202102260100.png](/blog/images/202102260100.png)
+
+{:start="11"}
+11. 新項目完成之後，它會有一個要你下載Scanner的[連結](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/)
+
+12. 新增程式碼掃瞄設定檔，並存成course.properties
 {% highlight conf %}
 sonar.projectKey=course
 sonar.projectName=course
@@ -363,13 +409,19 @@ sonar.host.url=http://[你的sonarqube主機IP]:9000
 sonar.projectBaseDir=[你的course程式碼所在的位置]
 sonar.sources=./
 sonar.exclusions=**/vendor/**,**/storage/**
+sonar.login=[你的user token]
 {% endhighlight %}
 
-{:start="9"}
-9. 運行Scanner
+{:start="13"}
+13. 開啟shell，運行Scanner
 {% highlight console %}
 sonar-scanner -Dproject.settings=[你的course.properties位置]
 {% endhighlight %}
+
+{:start="14"}
+14. 掃完之後，可以進入網頁看結果
+
+![/blog/images/202102260130.png](/blog/images/202102260130.png)
 
 ## 自動上版
 
