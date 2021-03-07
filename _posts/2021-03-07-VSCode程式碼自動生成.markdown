@@ -1,14 +1,14 @@
 ---
 layout: post
 title:  "VSCode程式碼自動生成"
-date:   2021-03-05 00:00:00
+date:   2021-03-07 00:00:00
 categories: 軟體設定
 tags: 軟體設定
 excerpt: VSCode程式碼自動生成
 mathjax: true
 ---
 
-![/blog/images/202102252220.jpg](/blog/images/202102252220.jpg)
+![/blog/images/202103071653.png](/blog/images/202103071653.png)
 
 最近一直有一個念頭，我想要修改我以前開發過的程式碼生成器，因為覺得目前的作業方式太沒效率了，如果可以少一些時間做開發，多的時間通通都可拿來做研究
 
