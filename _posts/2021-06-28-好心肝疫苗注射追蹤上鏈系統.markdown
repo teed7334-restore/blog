@@ -1,0 +1,189 @@
+---
+layout: post
+title:  "好心肝疫苗注射追蹤上鏈系統"
+date:   2021-06-28 00:00:00
+categories: 區塊鏈技術
+tags: 區塊鏈技術
+excerpt: 好心肝疫苗注射追蹤上鏈系統
+mathjax: true
+---
+
+![/blog/images/20210628214800.jpg](/blog/images/20210628214800.jpg)
+
+這是一篇教大家，如何透過Simba chain，手把手設計出好心肝疫苗注射上鏈系統的教學
+
+本教學我們會針對資產也就是vaccine，與交易者vvip二個項目做關聯，相關欄位標示如下
+
+|vaccine       |
+|---|:---|:---:|
+|name|string|疫苗名稱|
+|pcs|uint8|劑數|
+|price|uint8|單劑價格(台幣)|
+|manufacture_date|string|製造日期|
+|expiration_date|string|過期日期|
+|have_oal|bool|是否有原廠授權書|
+
+|vvip       |
+|---|:---|:---:|
+|sid|string|身份証|
+|name|string|施打者姓名|
+|identity|uint8|身份(1:官員,2:官二代,3:商界大佬,4:社會具影響力人仕,5:黑道大佬,6:金主)|
+|partisan|uint8|黨派(1:民進黨,2:基進黨,3:國民黨,4:其他)|
+|sonsorship_amount|uint64|贊助金|
+|gender|uint8|姓別(1:男性,2:女性,3:跨性別,4:跨物種,5:史萊姆,6:二重幻影)|
+|created_date|string|注射日期|
+
+
+## 介紹
+
+Simba Chain Inc.於2017年由國防高級研究項目局（DARPA）授予印第安納州技術和製造公司（ITAMCO）以及Notre Dame大學的研究中心，以開發安全，美國軍方的不加載的消息傳遞和交易平台
+
+Simba Chain透過本身提供的BaaS服務，讓企業可以在不用太多教育訓練之下，達到資料上鏈的目的，目前提供上鏈的智能合約有Solidity與Stellar，並且生成Restful API與文件，供前端進行呼叫與使用，你只要透過所見即所得的方式，標示資產與交易並指定它的流向，就會自動生成智能合約，並透過平台提供的機制上鏈，由於產生的智能合約與Restful API的程式碼都無法被修改，如果需要在智能合約中進行邏輯運算等操作的，可能就要考慮使用其他的工具了
+
+## 註冊/登入
+
+{:start="1"}
+1. 首先，我們打開瀏覽器進入以下網站
+
+   [https://simbachain.com/](https://simbachain.com/)
+
+{:start="2"}
+2. 點右上角的LOGIN/SIGNUP
+
+![/blog/images/20210628221100.jpg](/blog/images/20210628221100.jpg)
+
+{:start="3"}
+3. 點右下角的LOGIN/SIGNUP
+
+![/blog/images/20210628221101.jpg](/blog/images/20210628221101.jpg)
+
+{:start="4"}
+4. 註冊完成員進入主頁面
+
+![/blog/images/20210628225402.jpg](/blog/images/20210628225402.jpg)
+
+
+## 設計智能合約
+
+{:start="1"}
+1. 從 Smart Contact/Solidity 進入
+
+![/blog/images/20210628225403.jpg](/blog/images/20210628225403.jpg)
+
+{:start="2"}
+2. 點右下角的"+"號新增智能合約，系統預設的智能合約有興趣也點Quick Code View與Graph Mode進去查看別人怎麼設計的
+
+![/blog/images/20210628225404.jpg](/blog/images/20210628225404.jpg)
+
+{:start="3"}
+3. 新增資產，click ADD ASSET
+
+![/blog/images/20210628225405.jpg](/blog/images/20210628225405.jpg)
+
+{:start="4"}
+4. 新增資產名稱，我們給它打上vaccine，然後按下Enter
+
+![/blog/images/20210628225406.jpg](/blog/images/20210628225406.jpg)
+
+{:start="5"}
+5. 對資產新增所需之屬性，屬性內容可以拉到本Blog頁面最上面查看
+
+![/blog/images/20210628225407.jpg](/blog/images/20210628225407.jpg)
+
+{:start="6"}
+6. 新增交易，click ADD TRANSACTION
+
+![/blog/images/20210628225408.jpg](/blog/images/20210628225408.jpg)
+
+{:start="7"}
+7. 新增交易名稱，我們給它打上vvip，然後按下Enter
+
+![/blog/images/20210628225409.jpg](/blog/images/20210628225409.jpg)
+
+{:start="8"}
+8. 對交易新增所需之屬性，屬性內容可以拉到本Blog頁面最上面查看
+
+![/blog/images/20210628225410.jpg](/blog/images/20210628225410.jpg)
+
+{:start="9"}
+9. 將交易與資產建立關連
+
+![/blog/images/20210628225411.jpg](/blog/images/20210628225411.jpg)
+
+{:start="10"}
+10. 儲存智能合約
+
+![/blog/images/20210628225412.jpg](/blog/images/20210628225412.jpg)
+
+{:start="11"}
+11. 離開，如果日後智能合約有變動，需要點Quit旁邊的Update進行更新
+
+![/blog/images/20210628225413.jpg](/blog/images/20210628225413.jpg)
+
+## 設定Restful API
+
+{:start="1"}
+1. 從 Application 進入
+
+![/blog/images/20210628225414.jpg](/blog/images/20210628225414.jpg)
+
+{:start="2"}
+2. 點右下角的"+"號新增API
+
+![/blog/images/20210628225415.jpg](/blog/images/20210628225415.jpg)
+
+{:start="3"}
+3. 新增要發佈的區塊鏈類型與網路，Ropsten是測試網路，可以透過申請免費的coin來發佈智能合約
+
+![/blog/images/20210628225416.jpg](/blog/images/20210628225416.jpg)
+
+{:start="3"}
+3. 新增使用的IPFS類型，IPFS是給你存放檔案用的，本案例沒有用到檔案上傳等機制，所以用預設就好
+
+![/blog/images/20210628225417.jpg](/blog/images/20210628225417.jpg)
+
+{:start="4"}
+4. 選擇API要介接的智能合約
+
+![/blog/images/20210628225418.jpg](/blog/images/20210628225418.jpg)
+
+{:start="5"}
+5. 設定APP名稱與API路徑，路徑無法重複，如果名字被人用掉了，請換一個名字
+
+![/blog/images/20210628225419.jpg](/blog/images/20210628225419.jpg)
+
+{:start="6"}
+6. 新增錢包，因為發佈智能合約需要付費，但是我們是使用Ropsten測試網路，等等我們可以透過一個網址拿到免費的coin打入錢包
+
+![/blog/images/20210628225420.jpg](/blog/images/20210628225420.jpg)
+
+{:start="7"}
+7. 新增錢包名稱
+
+![/blog/images/20210628225421.jpg](/blog/images/20210628225421.jpg)
+
+{:start="8"}
+8. 發佈智能合約並付費
+
+![/blog/images/20210628225422.jpg](/blog/images/20210628225422.jpg)
+
+可以透過以下網址取得Ropsten測試網路的coin打到自已的錢包中
+
+[https://faucet.ropsten.be/](https://faucet.ropsten.be/)
+
+![/blog/images/20210628225423.jpg](/blog/images/20210628225423.jpg)
+
+發送之後，大約等個數分鐘左右，如果等太久可以到 Account/Blockchain Wallets/Ethereum Wallet當中多生數個錢包，同時去要錢，但要注意網站可能會鎖IP
+
+確認錢到帳之號，就可以透過DEPLOY發佈到區塊鏈上了
+
+{:start="9"}
+9. 生成Restful API
+
+當 Application 頁面從時鐘變成三角型，就代表對應的Restful API已經生成了，可以點頁籤進入查看API了
+
+![/blog/images/20210628225424.jpg](/blog/images/20210628225424.jpg)
+
+這是我的Restful API，供大家試玩，玩壞沒關係
+
+[https://api.simbachain.com/v1/good_intention/](https://api.simbachain.com/v1/good_intention/)
